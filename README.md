@@ -85,10 +85,10 @@ User selects ID → Loads data
 
 ## 📊 Dashboard Insights
 
-🔥 Engagement Level Distribution
-🚨 Churn Risk Segmentation
-📦 Plan Type Breakdown
-🧪 A/B Variant Allocation
+-🔥 Engagement Level Distribution
+-🚨 Churn Risk Segmentation
+-📦 Plan Type Breakdown
+-🧪 A/B Variant Allocation
 
 ---
 
@@ -109,8 +109,8 @@ This simulates feature experiments and is visualized in the dashboard.
 ## 💼 Built By
 
 Tanesh Singhal
-MS Business Analytics @ University of Cincinnati
-AI in Business · DevOps Enthusiast · Product Strategy
+-MS Business Analytics @ University of Cincinnati
+-AI in Business · DevOps Enthusiast · Product Strategy
 
 ---
 
