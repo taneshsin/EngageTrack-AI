@@ -68,9 +68,10 @@ streamlit run src/app.py
 ```bash
 docker build -t engagetrack .
 docker run -p 8501:8501 engagetrack
-```  
+```
+  
+🌐 Visit the app: [http://localhost:8501](http://localhost:8501)
 
-Visit: http://localhost:8501 <br>
 ---
 
 ## 🧠 System Logic
