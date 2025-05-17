@@ -84,6 +84,7 @@ User selects ID → Loads data
 ---
 
 ## 📊 Dashboard Insights
+
 🔥 Engagement Level Distribution
 🚨 Churn Risk Segmentation
 📦 Plan Type Breakdown
@@ -91,22 +92,25 @@ User selects ID → Loads data
 ---
 
 ## 🧪 A/B Testing Support
+
 Each user is randomly assigned a Variant A or B.
 This simulates feature experiments and is visualized in the dashboard.
 ---
 
 ## 📄 Export & Logs
-✅ User summary can be downloaded as a TXT file
 
+✅ User summary can be downloaded as a TXT file
 ✅ All user interactions are logged to /logs/usage.log
 ---
 
 ## 💼 Built By
+
 Tanesh Singhal
 MS Business Analytics @ University of Cincinnati
 AI in Business · DevOps Enthusiast · Product Strategy
 ---
 
 ## 📄 License
+
 MIT License – Free to use, fork, and expand.
 
