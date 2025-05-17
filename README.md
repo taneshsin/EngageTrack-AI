@@ -89,18 +89,21 @@ User selects ID → Loads data
 🚨 Churn Risk Segmentation
 📦 Plan Type Breakdown
 🧪 A/B Variant Allocation
+
 ---
 
 ## 🧪 A/B Testing Support
 
 Each user is randomly assigned a Variant A or B.
 This simulates feature experiments and is visualized in the dashboard.
+
 ---
 
 ## 📄 Export & Logs
 
 ✅ User summary can be downloaded as a TXT file
 ✅ All user interactions are logged to /logs/usage.log
+
 ---
 
 ## 💼 Built By
@@ -108,6 +111,7 @@ This simulates feature experiments and is visualized in the dashboard.
 Tanesh Singhal
 MS Business Analytics @ University of Cincinnati
 AI in Business · DevOps Enthusiast · Product Strategy
+
 ---
 
 ## 📄 License
