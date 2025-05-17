@@ -15,7 +15,6 @@
 - ✅ Modular code structure for scaling
 - ✅ Dashboard with bar charts for key metrics
 - ✅ Dockerized environment for deployment
-
 ---
 
 ## 📦 Tech Stack
@@ -26,11 +25,10 @@
 - **DevOps**: Docker, Git, Modular `src/` layout
 - **Data**: CSV-based user simulation
 - **Dashboarding**: Streamlit Charts
-
 ---
 
 ## 📂 Folder Structure
-
+```
 EngageTrack-AI/
 ├── src/ # App logic
 │ ├── app.py
@@ -55,7 +53,7 @@ EngageTrack-AI/
 ├── assign_variants.py
 ├── .gitignore
 └── README.md
-
+```
 ---
 
 ## ▶️ How to Run
@@ -64,45 +62,51 @@ EngageTrack-AI/
 ```bash
 pip install -r requirements.txt
 streamlit run src/app.py
+```
 
-🐳 Option 2: Dockerized
-
+### 🐳 Option 2: Dockerized
+```bash
 docker build -t engagetrack .
 docker run -p 8501:8501 engagetrack
-
+```
 Visit: http://localhost:8501
+---
 
-🧠 System Logic
+## 🧠 System Logic
+```bash
 User selects ID → Loads data
   ↳ Engagement + Churn Risk Calculated
   ↳ Mock AI generates feature nudge
   ↳ Lifecycle message shown
   ↳ Export report (TXT) enabled
   ↳ Dashboard visualizes trends
+```
+---
 
-
-📊 Dashboard Insights
+## 📊 Dashboard Insights
 🔥 Engagement Level Distribution
 🚨 Churn Risk Segmentation
 📦 Plan Type Breakdown
 🧪 A/B Variant Allocation
+---
 
-
-🧪 A/B Testing Support
+## 🧪 A/B Testing Support
 Each user is randomly assigned a Variant A or B.
 This simulates feature experiments and is visualized in the dashboard.
+---
 
-📄 Export & Logs
+## 📄 Export & Logs
 ✅ User summary can be downloaded as a TXT file
 
 ✅ All user interactions are logged to /logs/usage.log
+---
 
-
-💼 Built By
+## 💼 Built By
 Tanesh Singhal
 MS Business Analytics @ University of Cincinnati
 AI in Business · DevOps Enthusiast · Product Strategy
+---
 
-📄 License
+## 📄 License
 MIT License – Free to use, fork, and expand.
 
