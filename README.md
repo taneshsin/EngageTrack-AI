@@ -69,7 +69,8 @@ streamlit run src/app.py
 docker build -t engagetrack .
 docker run -p 8501:8501 engagetrack
 ```
-Visit: http://localhost:8501
+
+- Visit: http://localhost:8501
 ---
 
 ## 🧠 System Logic
@@ -85,10 +86,11 @@ User selects ID → Loads data
 
 ## 📊 Dashboard Insights
 
-🔥 Engagement Level Distribution  
-🚨 Churn Risk Segmentation  
-📦 Plan Type Breakdown  
-🧪 A/B Variant Allocation
+- 🔥 **Engagement Level Distribution**  
+- 🚨 **Churn Risk Segmentation**  
+- 📦 **Plan Type Breakdown**  
+- 🧪 **A/B Variant Allocation**
+
 ---
 
 ## 🧪 A/B Testing Support
