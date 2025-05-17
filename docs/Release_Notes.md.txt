@@ -1,0 +1,20 @@
+# 📦 Release Notes – EngageTrack AI
+
+## Version 1.0 – May 2025
+
+✅ Simulated User Lifecycle  
+✅ Engagement Score + Churn Risk Detection  
+✅ Persona-Based AI Nudge Engine  
+✅ Variant A/B Testing  
+✅ Downloadable User Summary  
+✅ Streamlit Interface with Tabbed UI  
+✅ Usage Logging to `logs/usage.log`  
+✅ Dockerized for Production Use  
+✅ Modular Python Code (src/)  
+✅ Visual Analytics Dashboard  
+
+Next Up:
+- Real API integration
+- SQLite persistence
+- Auth login simulation
+- GitHub Actions CI

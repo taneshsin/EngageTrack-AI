@@ -1,0 +1,34 @@
+# 🔁 Python bytecode
+__pycache__/
+*.py[cod]
+
+# 📦 System files
+.DS_Store
+Thumbs.db
+
+# 🧾 Logs & temporary files
+*.log
+*.tmp
+logs/
+
+# 🔐 Secrets
+.env
+
+# 📓 Jupyter notebooks
+.ipynb_checkpoints/
+
+# 🌐 Streamlit config
+.streamlit/
+
+# 🛠 IDEs
+.vscode/
+.idea/
+
+# 🐳 Docker volumes or artifacts
+*.db
+
+# 📁 VSCode history
+.history/
+
+# 🧪 Output or build artifacts (optional)
+*.out

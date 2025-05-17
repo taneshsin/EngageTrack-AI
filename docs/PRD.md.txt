@@ -1,0 +1,54 @@
+# 🧠 EngageTrack AI – Product Requirements Document (PRD)
+
+## 1. Overview
+
+**EngageTrack AI** is a simulated SaaS product analytics platform that helps visualize user engagement, churn risk, and AI-driven feature nudges for productivity platforms. This project showcases AI integration, A/B testing, lifecycle insights, and modular design for product and engineering portfolios.
+
+---
+
+## 2. Target Users
+
+- 📚 Students: Looking for structured help in using the product
+- 🧑‍💼 Marketers: Want to see feature value fast
+- 🧠 Analysts: Use deep engagement and data tools
+- ✍️ Writers: Focused on distraction-free creative tools
+
+---
+
+## 3. Core Features
+
+| Feature                     | Description |
+|----------------------------|-------------|
+| ✅ AI Feature Recommendation | Suggests features based on persona & usage |
+| ✅ Lifecycle Nudges         | Generates motivational/productivity nudges |
+| ✅ Churn Risk Analysis      | Uses activity & engagement to flag risk |
+| ✅ A/B Variant Assignment   | Simulates experimental feature testing |
+| ✅ Exportable Summary       | One-click download for user insights |
+| ✅ System Dashboard         | Charts for churn, plan, and engagement |
+
+---
+
+## 4. Technical Design (Simplified Flow)
+User → Select ID → Streamlit App
+↳ Loads Data from CSV
+↳ Logs Session Info
+↳ Generates Mock Nudge (API)
+↳ Shows Recommendation + Risk
+↳ Enables Download + Dashboard View
+
+---
+
+## 5. Future Scope
+
+- Real-time API calls (OpenAI or analytics engines)
+- Integrated SQLite for persistence
+- Feature click tracking & nudge effectiveness
+- Real auth login and session tracking
+
+---
+
+## 6. Objective
+
+Simulate a production-level platform that showcases AI-product experience, full-stack lifecycle thinking, and strategic data visibility — targeted at PM, DevOps, and Strategy roles.
+
+

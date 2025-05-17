@@ -1,0 +1,43 @@
+# 🆘 Help Center – EngageTrack AI
+
+Welcome to EngageTrack AI!
+
+Here’s how to use this simulated analytics platform:
+
+---
+
+## 1. Choose a User
+
+Use the dropdown to simulate a user logging in. Their engagement and risk profile is loaded.
+
+---
+
+## 2. View AI-Driven Recommendations
+
+- 🔁 Click “Generate New Nudge” to get fresh suggestions
+- 🧠 Feature recommendation is based on your persona
+
+---
+
+## 3. Download Insights
+
+Click 📥 **Download User Summary** to export your full profile and recommendations.
+
+---
+
+## 4. View System Dashboard
+
+Check:
+- 🔥 Engagement Breakdown
+- 🚨 Churn Risk Overview
+- 💡 Plan Type Segmentation
+- 🧪 A/B Variant Distribution (if integrated)
+
+---
+
+If you're a developer:
+- Modify user data in `/data`
+- Adjust mock responses in `mock_api.py`
+- Add new analytics in `dashboard.py` (optional)
+
+Thanks for exploring EngageTrack AI!
