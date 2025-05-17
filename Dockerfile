@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy files
 COPY ./src /app/src
 COPY ./data /app/data
-COPY ./logs /app/logs
+RUN mkdir -p /app/logs
 COPY ./requirements.txt /app/
 
 # Install dependencies
