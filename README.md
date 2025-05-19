@@ -42,9 +42,6 @@ Built with **Streamlit + Docker + GitHub Actions + Azure AKS**, this project sho
 
 ## 🖼 Screenshots
 
-(📸 To add: save UI screenshots and place them in `/screenshots/`)
-
-```markdown
 ### 🔍 User Overview
 ![User Insights](screenshots/user_tab.png)
 
@@ -52,36 +49,37 @@ Built with **Streamlit + Docker + GitHub Actions + Azure AKS**, this project sho
 ![Dashboard](screenshots/dashboard_tab.png)
 
 ## 📂 Folder Structure
-```
+
+```bash
 EngageTrack-AI/
-├── src/ # App logic
-│ ├── app.py
-│ ├── data_loader.py
-│ ├── mock_api.py
-│ ├── recommendation_engine.py
-│
-├── logs/ # Logs are redirected to /tmp in cloud
-│
-├── data/ # Input data
-│ └── user_recommendations.csv
-│
-├── notebooks/ # Development notebooks
-│ └── *.ipynb
-│
-├── docs/ # Documentation
-│ └── PRD.md, Features.md, etc.
-│
-├── Dockerfile
-├── requirements.txt
-├── assign_variants.py
-├── Security.md
-├── docker-compose.yml
-├── engagetrack-deploy.yaml
-├── engagetrack-ingress.yaml
-├── engagetrack-service.yaml
-├── nginx.conf
-├── .gitignore
-└── README.md
+├── src/ # App logic  
+│ ├── app.py  
+│ ├── data_loader.py  
+│ ├── mock_api.py  
+│ ├── recommendation_engine.py  
+│  
+├── logs/ # Logs are redirected to /tmp in cloud  
+│  
+├── data/ # Input data  
+│ └── user_recommendations.csv  
+│  
+├── notebooks/ # Development notebooks  
+│ └── *.ipynb  
+│  
+├── docs/ # Documentation  
+│ └── PRD.md, Features.md, etc.  
+│  
+├── Dockerfile  
+├── requirements.txt  
+├── assign_variants.py  
+├── Security.md  
+├── docker-compose.yml  
+├── engagetrack-deploy.yaml  
+├── engagetrack-ingress.yaml  
+├── engagetrack-service.yaml  
+├── nginx.conf  
+├── .gitignore  
+└── README.md  
 ```
 ---
 
@@ -133,7 +131,7 @@ User selects ID → Loads data
 
 ## 📄 Export & Logging
 
-✅ Per-user summary export as .txt
+✅ Per-user summary export as .txt  
 ✅ Logs user activity to /tmp/usage.log (container-safe)
 
 ---
@@ -155,7 +153,6 @@ See Security.md for full details.
 Tanesh Singhal  
 MS Business Analytics @ University of Cincinnati  
 📌 Product • DevOps • AI Strategy
-🔗 LinkedIn • GitHub
 
 ---
 
