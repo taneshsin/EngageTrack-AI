@@ -20,15 +20,19 @@ with tab1:
     user_id = st.selectbox("Choose a user:", df["user_id"].unique())
     user_data = df[df["user_id"] == user_id].iloc[0]
 
-    # Safe logging setup
-    LOG_PATH = "/app/logs/usage.log"
-    os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
+    # ✅ Safe logging to /tmp/usage.log
+    LOG_PATH = "/tmp/usage.log"
 
     try:
         with open(LOG_PATH, "a") as log_file:
             log_file.write(f"[{datetime.datetime.now()}] Viewed: {user_id}\n")
     except Exception as e:
-        st.warning(f"⚠️ Could not write to log file: {e}")
+        import pwd
+        user = pwd.getpwuid(os.getuid()).pw_name
+        st.warning(f"⚠️ Logging failed: {e}")
+        st.warning(f"🧾 Running as user: {user}")
+        st.warning(f"📁 Current directory: {os.getcwd()}")
+        st.warning(f"📄 Files in /tmp/: {os.listdir('/tmp')}")
 
     # 🔄 AI Nudge (Session-based)
     st.subheader("💡 AI-Generated Nudge")
