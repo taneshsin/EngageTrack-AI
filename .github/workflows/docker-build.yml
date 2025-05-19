@@ -1,12 +1,18 @@
-name: Build Docker Image
+name: Build and Deploy to Azure AKS
 
 on:
   push:
     branches:
       - main
 
+env:
+  ACR_LOGIN_SERVER: engagetrackacr.azurecr.io  # update if needed
+  ACR_REPO_NAME: engagetrack-ai
+  RESOURCE_GROUP: engagetrack-rg
+  AKS_CLUSTER_NAME: engagetrack-clusterr
+
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,5 +22,24 @@ jobs:
     - name: Set up Docker
       uses: docker/setup-buildx-action@v3
 
-    - name: Build Docker image
-      run: docker build -t engagetrack-ai .
+    - name: Log in to Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Log in to Azure Container Registry
+      run: |
+        az acr login --name ${{ env.ACR_LOGIN_SERVER }}
+
+    - name: Build and push Docker image to ACR
+      run: |
+        docker build -t $ACR_LOGIN_SERVER/$ACR_REPO_NAME:latest .
+        docker push $ACR_LOGIN_SERVER/$ACR_REPO_NAME:latest
+
+    - name: Set AKS credentials
+      run: |
+        az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
+
+    - name: Restart AKS deployment
+      run: |
+        kubectl rollout restart deployment engagetrack
