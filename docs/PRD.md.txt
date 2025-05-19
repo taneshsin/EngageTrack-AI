@@ -1,54 +1,64 @@
-# 🧠 EngageTrack AI – Product Requirements Document (PRD)
+# 📘 Product Requirements Document – EngageTrack AI
 
-## 1. Overview
+## 1. 🧭 Overview
 
-**EngageTrack AI** is a simulated SaaS product analytics platform that helps visualize user engagement, churn risk, and AI-driven feature nudges for productivity platforms. This project showcases AI integration, A/B testing, lifecycle insights, and modular design for product and engineering portfolios.
-
----
-
-## 2. Target Users
-
-- 📚 Students: Looking for structured help in using the product
-- 🧑‍💼 Marketers: Want to see feature value fast
-- 🧠 Analysts: Use deep engagement and data tools
-- ✍️ Writers: Focused on distraction-free creative tools
+EngageTrack AI is a simulated lifecycle insight and productivity enhancement platform. It is built to demonstrate AI-powered feature nudging, engagement scoring, churn detection, and A/B variant testing — without relying on sensitive user data.
 
 ---
 
-## 3. Core Features
+## 2. 🎯 Goals
 
-| Feature                     | Description |
-|----------------------------|-------------|
-| ✅ AI Feature Recommendation | Suggests features based on persona & usage |
-| ✅ Lifecycle Nudges         | Generates motivational/productivity nudges |
-| ✅ Churn Risk Analysis      | Uses activity & engagement to flag risk |
-| ✅ A/B Variant Assignment   | Simulates experimental feature testing |
-| ✅ Exportable Summary       | One-click download for user insights |
-| ✅ System Dashboard         | Charts for churn, plan, and engagement |
+- Simulate a working productivity analytics platform for SaaS users
+- Demonstrate how AI-powered nudges can improve user retention
+- Show DevOps skills via containerization, CI/CD, and AKS hosting
+- Make it recruiter-facing, deployable, and product manager ready
 
 ---
 
-## 4. Technical Design (Simplified Flow)
-User → Select ID → Streamlit App
-↳ Loads Data from CSV
-↳ Logs Session Info
-↳ Generates Mock Nudge (API)
-↳ Shows Recommendation + Risk
-↳ Enables Download + Dashboard View
+## 3. 👥 Target Users (Simulated Personas)
+
+| Persona   | Characteristics                            |
+|-----------|--------------------------------------------|
+| Student   | Low attention span, likes gamified nudges  |
+| Marketer  | Seeks campaign performance tips            |
+| Analyst   | Focused on insights and dashboard clarity  |
+| Writer    | Prefers quiet engagement reminders         |
 
 ---
 
-## 5. Future Scope
+## 4. 🧩 Key Features
 
-- Real-time API calls (OpenAI or analytics engines)
-- Integrated SQLite for persistence
-- Feature click tracking & nudge effectiveness
-- Real auth login and session tracking
+| Feature                          | Description |
+|----------------------------------|-------------|
+| AI-Generated Nudges              | GPT-like text suggestions for user re-engagement |
+| Engagement & Churn Dashboard     | High-level metrics and distribution views |
+| A/B Variant Assignment           | Random assignment to simulate experiment setup |
+| Per-user Detail View             | Drill-down by persona, churn risk, and feature use |
+| Download Summary                 | One-click export of user lifecycle insights |
+| Logging & Mock API               | Simulated analytics + user nudge generation logs |
 
 ---
 
-## 6. Objective
+## 5. 📈 Metrics for Success
 
-Simulate a production-level platform that showcases AI-product experience, full-stack lifecycle thinking, and strategic data visibility — targeted at PM, DevOps, and Strategy roles.
+| Metric                | Target |
+|-----------------------|--------|
+| Successful CI/CD run  | ✅     |
+| User nudge generation | ✅     |
+| App uptime (AKS)      | ✅     |
+| Variant balance       | ~50/50 |
 
+---
 
+## 6. 🛣️ Future Enhancements
+
+- OAuth Login / Basic Auth
+- Real-time interaction tracking
+- True LLM-powered nudge integration (OpenAI, Cohere)
+- User analytics history and engagement scoring model
+- Admin dashboard for feature toggles and variant override
+
+---
+
+📅 **Release Date:** May 2025  
+🔧 **Maintainer:** Tanesh Singhal  
