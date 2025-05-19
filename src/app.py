@@ -20,7 +20,7 @@ with tab1:
     user_data = df[df["user_id"] == user_id].iloc[0]
 
     # Log user interaction
-    with open("logs/usage.log", "a") as log_file:
+    with open("/app/logs/usage.log", "a") as log_file:
         log_file.write(f"[{datetime.datetime.now()}] Viewed: {user_id}\n")
 
     # 🔄 AI Nudge (Session-based so it updates only on button click)
