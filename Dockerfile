@@ -12,10 +12,11 @@ COPY ./requirements.txt /app/
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Create a non-root user and switch to it
-RUN adduser --disabled-password --gecos '' appuser && \
-    mkdir -p /app/logs && \
-    chown -R appuser /app/logs
+# Create non-root user
+RUN adduser --disabled-password --gecos '' appuser
+
+# Create logs folder and give full permission to appuser
+RUN mkdir -p /app/logs && chown -R appuser /app/logs
 
 # Switch to non-root user
 USER appuser
