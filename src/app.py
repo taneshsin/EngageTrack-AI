@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import datetime
+import os
 
 from data_loader import load_user_data
 from mock_api import generate_mock_nudge
@@ -19,11 +20,17 @@ with tab1:
     user_id = st.selectbox("Choose a user:", df["user_id"].unique())
     user_data = df[df["user_id"] == user_id].iloc[0]
 
-    # Log user interaction
-    with open("/app/logs/usage.log", "a") as log_file:
-        log_file.write(f"[{datetime.datetime.now()}] Viewed: {user_id}\n")
+    # Safe logging setup
+    LOG_PATH = "/app/logs/usage.log"
+    os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
 
-    # 🔄 AI Nudge (Session-based so it updates only on button click)
+    try:
+        with open(LOG_PATH, "a") as log_file:
+            log_file.write(f"[{datetime.datetime.now()}] Viewed: {user_id}\n")
+    except Exception as e:
+        st.warning(f"⚠️ Could not write to log file: {e}")
+
+    # 🔄 AI Nudge (Session-based)
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge"):
         st.session_state["mock_nudge"] = generate_mock_nudge(
@@ -47,7 +54,7 @@ with tab1:
     st.markdown(f"**🔥 Engagement Level:** <span style='color:{get_engagement_color(user_data['engagement_level'])}'>{user_data['engagement_level']}</span>", unsafe_allow_html=True)
     st.markdown(f"**⏱ Days Since Last Active:** {int(user_data['days_since_active'])}")
     st.markdown(f"**🚨 Churn Risk:** <span style='color:{get_churn_color(user_data['churn_risk'])}'>{user_data['churn_risk']}</span>", unsafe_allow_html=True)
-    st.markdown(f"**🧪 A/B Test Variant:** `{user_data['variant']}`")
+    st.markdown(f"**🧪 A/B Test Variant:** {user_data['variant']}")
 
     st.divider()
 
@@ -109,4 +116,3 @@ with tab2:
     st.markdown("**🧪 A/B Test Split**")
     variant_dist = df["variant"].value_counts()
     st.bar_chart(variant_dist)
-
