@@ -4,7 +4,7 @@ metadata:
   name: engagetrack-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/whitelist-source-range: "172.171.188.153/32"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "184.54.64.72/32"
     nginx.ingress.kubernetes.io/limit-rps: "10"
     nginx.ingress.kubernetes.io/limit-burst-multiplier: "3"
 spec:
