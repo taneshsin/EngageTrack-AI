@@ -15,3 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Run Streamlit app
 CMD ["streamlit", "run", "src/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+# Create a non-root user and switch to it
+RUN adduser --disabled-password --gecos '' appuser
+USER appuser
