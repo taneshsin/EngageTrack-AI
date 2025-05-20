@@ -114,17 +114,17 @@ User selects ID → Loads behavior & metadata
    ↳ Optional export as summary .txt
    ↳ Dashboard shows aggregated insights
 ```
-✅ If variant is missing in dataset, manually add it using assign_variants.py
+✅ If variant is missing in dataset, manually add it using assign_variants.py  
 ✅ Payment Delay is log-transformed for ML stability
 ---
 
 ## 📊 Dashboard Insights
 
-🔥 **Usage Frequency Distribution** <br>
-📅 **Contract Length Segmentation** <br>
-📞 **Support Call Frequency** <br>
-⏳ **Payment Delay Breakdown** <br>
-🧪 **A/B Variant Split** (if column present)
+🔥 **Usage Frequency Distribution** <br>  
+📅 **Contract Length Segmentation** <br>  
+📞 **Support Call Frequency** <br>  
+⏳ **Payment Delay Breakdown** <br>  
+🧪 **A/B Variant Split** (if column present)  
 ---
 
 ## 🧪 A/B Testing Support
