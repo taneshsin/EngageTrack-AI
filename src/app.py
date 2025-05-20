@@ -46,7 +46,7 @@ def train_churn_model():
         churn_df[col] = le.fit_transform(churn_df[col])
         le_dict[col] = le
 
-    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type", "variant"])
+    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type"])
     y = churn_df["Churn"]
 
     scaler = StandardScaler()
@@ -105,7 +105,7 @@ with tab1:
     st.info(st.session_state["mock_nudge"])
 
     st.markdown(f"**📟 Subscription Type:** {user_data['Subscription Type']}")
-    st.markdown(f"**🗕️ Contract Type:** {user_data['Contract Length']}")
+    st.markdown(f"**🗕 Contract Type:** {user_data['Contract Length']}")
     st.markdown(f"**🔥 Usage Frequency:** <span style='color:{get_engagement_color(user_data['Usage Frequency'])}'>{user_data['Usage Frequency']}</span>", unsafe_allow_html=True)
     st.markdown(f"**📞 Support Calls:** {user_data['Support Calls']}")
     st.markdown(f"**⏳ Payment Delay:** {user_data['Payment Delay']} days")
@@ -117,7 +117,7 @@ with tab1:
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
 
     input_row = user_data.to_frame().T.copy()
-    input_row["Payment Delay"] = np.log1p(input_row["Payment Delay"])
+    input_row["Payment Delay"] = np.log1p(float(input_row["Payment Delay"]))  # ✅ FIXED HERE
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
         input_row[col] = churn_encoders[col].transform(input_row[col])
     X_input = input_row[churn_features]
@@ -161,17 +161,6 @@ Nudge: {st.session_state["mock_nudge"]}
 
     st.caption("Built with ❤️ by Tanesh • Real ML-powered product analytics platform")
 
-    with st.expander("ℹ️ About this app"):
-        st.markdown("""
-        **EngageTrack AI** is a simulated ML-powered analytics platform for:
-        - 🧠 AI-driven nudging
-        - 📈 User lifecycle visualization
-        - 🔮 Churn prediction
-        - 🧪 A/B testing simulation
-
-        Built with ❤️ by [Tanesh Singhal](https://github.com/taneshsin) • May 2025
-        """)
-
 # ---------------------------
 # TAB 2: Dashboard
 # ---------------------------
@@ -194,6 +183,7 @@ with tab3:
     full_input["Payment Delay"] = np.log1p(full_input["Payment Delay"])
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
         full_input[col] = churn_encoders[col].transform(full_input[col])
+
     X_full = full_input[churn_features]
     X_scaled = churn_scaler.transform(X_full)
 
