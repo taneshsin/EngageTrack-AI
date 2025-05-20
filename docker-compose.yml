@@ -1,17 +1,24 @@
-version: '3'
+version: '3.8'
 
 services:
   app:
     build: .
+    container_name: engagetrack-app
     ports:
       - "8501:8501"
-    container_name: engagetrack-app
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    security_opt:
+      - no-new-privileges:true
 
   nginx:
     image: nginx:latest
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+    container_name: nginx-proxy
     ports:
       - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - app
+    restart: unless-stopped

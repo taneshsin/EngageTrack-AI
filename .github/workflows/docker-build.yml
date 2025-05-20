@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  ACR_LOGIN_SERVER: engagetrackacr.azurecr.io  # update if needed
+  ACR_LOGIN_SERVER: engagetrackacr.azurecr.io
   ACR_REPO_NAME: engagetrack-ai
   RESOURCE_GROUP: engagetrack-rg
   AKS_CLUSTER_NAME: engagetrack-clusterr
@@ -16,30 +16,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: ✅ Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Docker
+    - name: 🐳 Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Azure CLI
+    - name: 🔐 Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Log in to Azure Container Registry
-      run: |
-        az acr login --name ${{ env.ACR_LOGIN_SERVER }}
+    - name: 🔐 Login to Azure Container Registry (ACR)
+      run: az acr login --name ${{ env.ACR_LOGIN_SERVER }}
 
-    - name: Build and push Docker image to ACR
+    - name: 🏗 Build and Push Docker Image
       run: |
         docker build -t $ACR_LOGIN_SERVER/$ACR_REPO_NAME:latest .
         docker push $ACR_LOGIN_SERVER/$ACR_REPO_NAME:latest
 
-    - name: Set AKS credentials
+    - name: ⚙️ Set AKS Context
       run: |
         az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER_NAME
 
-    - name: Restart AKS deployment
+    - name: 🚀 Restart AKS Deployment
       run: |
         kubectl rollout restart deployment engagetrack
+
+    - name: ✅ Verify Rollout
+      run: |
+        kubectl rollout status deployment/engagetrack
+        kubectl get pods -l app=engagetrack
