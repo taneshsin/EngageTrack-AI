@@ -15,8 +15,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Create non-root user
 RUN adduser --disabled-password --gecos '' appuser
 
-# Create logs folder and give full permission to appuser
-RUN mkdir -p /app/logs && chown -R appuser /app/logs
+# Fix permissions on logs AND data folders
+RUN mkdir -p /app/logs && \
+    chown -R appuser /app/logs && \
+    chown -R appuser /app/data
 
 # Switch to non-root user
 USER appuser
