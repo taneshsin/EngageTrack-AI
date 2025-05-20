@@ -1,0 +1,31 @@
+# Python cache & logs
+__pycache__/
+*.pyc
+*.pyo
+*.log
+
+# IDE/editor stuff
+.vscode/
+.DS_Store
+
+# Notebooks and checkpoints
+notebooks/
+*.ipynb
+.ipynb_checkpoints/
+
+# Git files
+.git/
+.gitignore
+
+# Streamlit secrets or environment configs
+.secrets/
+*.env
+.env.*
+
+# Raw or large data (already in repo or generated)
+data/*.csv
+logs/
+
+# Docker-related files
+docker-compose.yml
+nginx.conf
