@@ -114,8 +114,10 @@ User selects ID → Loads behavior & metadata
    ↳ Optional export as summary .txt
    ↳ Dashboard shows aggregated insights
 ```
+
 ✅ If variant is missing in dataset, manually add it using assign_variants.py  
 ✅ Payment Delay is log-transformed for ML stability
+
 ---
 
 ## 📊 Dashboard Insights
