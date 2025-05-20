@@ -7,24 +7,29 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    name: 🧪 Run Python CI checks
 
     steps:
-    - name: Checkout code
+    - name: 📥 Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python
+    - name: 🐍 Set up Python 3.11
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
+    - name: 📦 Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run a basic test (validate import)
-      run: |
-        python src/data_loader.py
+    - name: 🔍 Smoke test: Run data loader
+      run: python src/data_loader.py
 
+    - name: 🚀 (Optional) Check Streamlit starts without crash
+      run: |
+        streamlit run src/main.py --server.headless true &
+        sleep 10
+        pkill streamlit
