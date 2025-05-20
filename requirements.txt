@@ -2,3 +2,10 @@ pandas
 streamlit
 matplotlib
 seaborn
+scikit-learn
+xgboost
+shap
+joblib
+numpy
+pyyaml
+python-dotenv
