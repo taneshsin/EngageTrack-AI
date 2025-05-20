@@ -181,12 +181,21 @@ Nudge: {st.session_state["mock_nudge"]}
 # ---------------------------
 with tab2:
     st.subheader("📈 System-wide Metrics")
+
+    st.markdown("### 📅 Contract Type Distribution")
     st.bar_chart(df["Contract Length"].value_counts(), use_container_width=True)
+
+    st.markdown("### 📞 Support Call Frequency")
     st.bar_chart(df["Support Calls"].value_counts().sort_index(), use_container_width=True)
+
+    st.markdown("### ⏳ Payment Delay Distribution (days)")
     st.bar_chart(df["Payment Delay"].value_counts().sort_index(), use_container_width=True)
+
+    st.markdown("### 🔥 Usage Frequency Distribution")
     st.bar_chart(df["Usage Frequency"].value_counts().sort_index(), use_container_width=True)
+
     if 'variant' in df.columns:
-        st.markdown("**🧪 A/B Variant Distribution**")
+        st.markdown("### 🧪 A/B Variant Assignment")
         st.bar_chart(df["variant"].value_counts(), use_container_width=True)
 
 # ---------------------------
