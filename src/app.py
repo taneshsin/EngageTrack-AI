@@ -149,3 +149,5 @@ with tab2:
     st.bar_chart(df["Support Calls"].value_counts().sort_index(), use_container_width=True)
     st.bar_chart(df["Payment Delay"].value_counts().sort_index(), use_container_width=True)
     st.bar_chart(df["Usage Frequency"].value_counts().sort_index(), use_container_width=True)
+    st.markdown("**🧪 A/B Variant Distribution**")
+    st.bar_chart(df["variant"].value_counts(), use_container_width=True)
