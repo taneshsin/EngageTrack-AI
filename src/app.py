@@ -46,7 +46,11 @@ def train_churn_model():
         churn_df[col] = le.fit_transform(churn_df[col])
         le_dict[col] = le
 
-    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type", "variant"], errors='ignore')
+    # Drop any non-numeric column (like 'variant') if still present
+    if 'variant' in churn_df.columns:
+        churn_df = churn_df.drop(columns=["variant"])
+
+    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type"])
     y = churn_df["Churn"]
 
     scaler = StandardScaler()
@@ -69,6 +73,7 @@ def train_churn_model():
 
 churn_model, churn_scaler, churn_encoders, churn_features = train_churn_model()
 
+# Tabs
 tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "🧠 Explainability"])
 
 # ---------------------------
@@ -111,20 +116,32 @@ with tab1:
     st.markdown(f"**⏳ Payment Delay:** {user_data['Payment Delay']} days")
     st.markdown(f"**💰 Total Spend:** ${user_data['Total Spend']}")
     st.markdown(f"**🕒 Last Interaction:** {user_data['Last Interaction']} days ago")
-    st.markdown(f"**🧪 Variant:** {user_data['variant']}")
+    if 'variant' in user_data:
+        st.markdown(f"**🧪 Variant:** {user_data['variant']}")
 
     st.divider()
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
 
     input_row = user_data.to_frame().T.copy()
-    input_row["Payment Delay"] = np.log1p(float(input_row["Payment Delay"]))  # ✅ FIXED HERE
+    input_row["Payment Delay"] = np.log1p(float(input_row["Payment Delay"]))
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
         input_row[col] = churn_encoders[col].transform(input_row[col])
+
     X_input = input_row[churn_features]
     X_input_scaled = churn_scaler.transform(X_input)
 
     pred = churn_model.predict(X_input_scaled)[0]
     proba = churn_model.predict_proba(X_input_scaled)[0][1]
+
+    if proba > 0.75:
+        risk_label = "High"
+        risk_color = "red"
+    elif proba > 0.5:
+        risk_label = "Medium"
+        risk_color = "orange"
+    else:
+        risk_label = "Low"
+        risk_color = "green"
 
     if pred == 1:
         st.error("❌ Model predicts user will churn.")
@@ -132,8 +149,6 @@ with tab1:
         st.success("✅ Model predicts user will stay.")
 
     st.markdown(f"**Churn Probability:** `{proba * 100:.2f}%`")
-    risk_color = get_churn_color(proba)
-    risk_label = "High" if risk_color == "red" else "Medium" if risk_color == "orange" else "Low"
     st.markdown(f"**Risk Level:** <span style='color:{risk_color}'>{risk_label}</span>", unsafe_allow_html=True)
 
     with st.expander("🔍 View model input features"):
@@ -148,7 +163,7 @@ Support Calls: {user_data['Support Calls']}
 Payment Delay: {user_data['Payment Delay']} days
 Total Spend: ${user_data['Total Spend']}
 Last Interaction: {user_data['Last Interaction']} days ago
-Variant: {user_data['variant']}
+Variant: {user_data.get('variant', 'N/A')}
 Churn Probability: {proba:.4f}
 Nudge: {st.session_state["mock_nudge"]}
 """
@@ -170,8 +185,9 @@ with tab2:
     st.bar_chart(df["Support Calls"].value_counts().sort_index(), use_container_width=True)
     st.bar_chart(df["Payment Delay"].value_counts().sort_index(), use_container_width=True)
     st.bar_chart(df["Usage Frequency"].value_counts().sort_index(), use_container_width=True)
-    st.markdown("**🧪 A/B Variant Distribution**")
-    st.bar_chart(df["variant"].value_counts(), use_container_width=True)
+    if 'variant' in df.columns:
+        st.markdown("**🧪 A/B Variant Distribution**")
+        st.bar_chart(df["variant"].value_counts(), use_container_width=True)
 
 # ---------------------------
 # TAB 3: SHAP Explainability
