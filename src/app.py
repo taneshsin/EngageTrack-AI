@@ -36,12 +36,9 @@ df = load_user_data()
 @st.cache_resource
 def train_churn_model():
     churn_df = pd.read_csv("data/churn.csv").copy()
-
-    # Drop ID, transform target, transform Payment Delay
     churn_df = churn_df.drop(columns=["CustomerID"])
     churn_df["Payment Delay"] = np.log1p(churn_df["Payment Delay"])
 
-    # Encode categoricals
     label_cols = ['Gender', 'Subscription Type', 'Contract Length']
     le_dict = {}
     for col in label_cols:
@@ -49,14 +46,12 @@ def train_churn_model():
         churn_df[col] = le.fit_transform(churn_df[col])
         le_dict[col] = le
 
-    # Train/Test Data
-    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type"])
+    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type", "variant"])
     y = churn_df["Churn"]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    # XGBoost with regularization
     model = xgb.XGBClassifier(
         use_label_encoder=False,
         eval_metric='logloss',
@@ -83,7 +78,6 @@ with tab1:
     user_id = st.selectbox("Choose a user:", df["CustomerID"].unique())
     user_data = df[df["CustomerID"] == user_id].iloc[0]
 
-    # Log view
     LOG_PATH = "/tmp/usage.log"
     try:
         with open(LOG_PATH, "a") as log_file:
@@ -91,7 +85,6 @@ with tab1:
     except Exception as e:
         st.warning(f"⚠️ Logging failed: {e}")
 
-    # Nudge
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge"):
         st.session_state["mock_nudge"] = generate_mock_nudge(
@@ -111,9 +104,8 @@ with tab1:
         )
     st.info(st.session_state["mock_nudge"])
 
-    # Metadata Display
-    st.markdown(f"**🧾 Subscription Type:** {user_data['Subscription Type']}")
-    st.markdown(f"**📅 Contract Type:** {user_data['Contract Length']}")
+    st.markdown(f"**📟 Subscription Type:** {user_data['Subscription Type']}")
+    st.markdown(f"**🗕️ Contract Type:** {user_data['Contract Length']}")
     st.markdown(f"**🔥 Usage Frequency:** <span style='color:{get_engagement_color(user_data['Usage Frequency'])}'>{user_data['Usage Frequency']}</span>", unsafe_allow_html=True)
     st.markdown(f"**📞 Support Calls:** {user_data['Support Calls']}")
     st.markdown(f"**⏳ Payment Delay:** {user_data['Payment Delay']} days")
@@ -122,10 +114,8 @@ with tab1:
     st.markdown(f"**🧪 Variant:** {user_data['variant']}")
 
     st.divider()
-
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
 
-    # Prepare input for model
     input_row = user_data.to_frame().T.copy()
     input_row["Payment Delay"] = np.log1p(input_row["Payment Delay"])
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
@@ -163,7 +153,7 @@ Churn Probability: {proba:.4f}
 Nudge: {st.session_state["mock_nudge"]}
 """
     st.download_button(
-        label="📥 Download User Summary",
+        label="📅 Download User Summary",
         data=summary_text,
         file_name=f"user_{user_id}_summary.txt",
         mime="text/plain"
@@ -175,7 +165,7 @@ Nudge: {st.session_state["mock_nudge"]}
         st.markdown("""
         **EngageTrack AI** is a simulated ML-powered analytics platform for:
         - 🧠 AI-driven nudging
-        - 📊 User lifecycle visualization
+        - 📈 User lifecycle visualization
         - 🔮 Churn prediction
         - 🧪 A/B testing simulation
 
@@ -186,7 +176,7 @@ Nudge: {st.session_state["mock_nudge"]}
 # TAB 2: Dashboard
 # ---------------------------
 with tab2:
-    st.subheader("📊 System-wide Metrics")
+    st.subheader("📈 System-wide Metrics")
     st.bar_chart(df["Contract Length"].value_counts(), use_container_width=True)
     st.bar_chart(df["Support Calls"].value_counts().sort_index(), use_container_width=True)
     st.bar_chart(df["Payment Delay"].value_counts().sort_index(), use_container_width=True)
@@ -202,10 +192,8 @@ with tab3:
 
     full_input = df.copy()
     full_input["Payment Delay"] = np.log1p(full_input["Payment Delay"])
-
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
         full_input[col] = churn_encoders[col].transform(full_input[col])
-
     X_full = full_input[churn_features]
     X_scaled = churn_scaler.transform(X_full)
 
