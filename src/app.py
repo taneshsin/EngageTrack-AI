@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 # ✅ Set page config immediately after import
@@ -6,19 +5,19 @@ st.set_page_config(page_title="EngageTrack AI", layout="centered")
 
 import pandas as pd
 import datetime
+import os
 
 from data_loader import load_user_data
 from mock_api import generate_mock_nudge
 from recommendation_engine import get_engagement_color, get_churn_color
 
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import xgboost as xgb
 
 # Load real user data
 df = load_user_data()
 
-# Train churn model on load
+# ✅ Churn model training
 @st.cache_resource
 def train_churn_model():
     churn_df = pd.read_csv("data/customer_churn_dataset-testing-master.csv").copy()
@@ -53,52 +52,49 @@ with tab1:
     user_id = st.selectbox("Choose a user:", df["CustomerID"].unique())
     user_data = df[df["CustomerID"] == user_id].iloc[0]
 
+    # Log view
     LOG_PATH = "/tmp/usage.log"
     try:
         with open(LOG_PATH, "a") as log_file:
             log_file.write(f"[{datetime.datetime.now()}] Viewed: {user_id}\n")
     except Exception as e:
-        import pwd
-        user = pwd.getpwuid(os.getuid()).pw_name
         st.warning(f"⚠️ Logging failed: {e}")
-        st.warning(f"🧾 Running as user: {user}")
-        st.warning(f"📁 Current directory: {os.getcwd()}")
-        st.warning(f"📄 Files in /tmp/: {os.listdir('/tmp')}")
 
+    # Nudge
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge"):
         st.session_state["mock_nudge"] = generate_mock_nudge(
-            user_id=user_id,
+            user_id="there",
             usage_frequency=user_data["Usage Frequency"],
             support_calls=user_data["Support Calls"],
             payment_delay=user_data["Payment Delay"],
             contract_length=user_data["Contract Length"]
         )
-
     if "mock_nudge" not in st.session_state:
         st.session_state["mock_nudge"] = generate_mock_nudge(
-            user_id=user_id,
+            user_id="there",
             usage_frequency=user_data["Usage Frequency"],
             support_calls=user_data["Support Calls"],
             payment_delay=user_data["Payment Delay"],
             contract_length=user_data["Contract Length"]
         )
-
     st.info(st.session_state["mock_nudge"])
 
+    # User metadata
     st.markdown(f"**📅 Contract Type:** {user_data['Contract Length']}")
     st.markdown(f"**🔥 Usage Frequency:** <span style='color:{get_engagement_color(user_data['Usage Frequency'])}'>{user_data['Usage Frequency']}</span>", unsafe_allow_html=True)
     st.markdown(f"**📞 Support Calls:** {user_data['Support Calls']}")
     st.markdown(f"**⏳ Payment Delay:** {user_data['Payment Delay']} days")
     st.markdown(f"**💰 Total Spend:** ${user_data['Total Spend']}")
     st.markdown(f"**🕒 Last Interaction:** {user_data['Last Interaction']} days ago")
+    st.markdown(f"**🧪 Variant:** {user_data['variant']}")
 
     st.divider()
 
+    # Churn prediction
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
 
     input_row = user_data.to_frame().T.copy()
-
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
         input_row[col] = churn_encoders[col].transform(input_row[col])
 
@@ -108,9 +104,39 @@ with tab1:
     pred = churn_model.predict(X_input_scaled)[0]
     proba = churn_model.predict_proba(X_input_scaled)[0][1]
 
-    st.markdown(f"**Model Prediction:** {'🟥 Churn' if pred == 1 else '🟩 Retained'}")
+    # Prediction result
+    if pred == 1:
+        st.error("❌ Model predicts user will churn.")
+    else:
+        st.success("✅ Model predicts user will stay.")
+
     st.markdown(f"**Churn Probability:** `{proba * 100:.2f}%`")
-    st.markdown(f"**Risk Color:** <span style='color:{get_churn_color(proba)}'>{get_churn_color(proba).capitalize()}</span>", unsafe_allow_html=True)
+    risk_color = get_churn_color(proba)
+    risk_label = "High" if risk_color == "red" else "Medium" if risk_color == "orange" else "Low"
+    st.markdown(f"**Risk Level:** <span style='color:{risk_color}'>{risk_label}</span>", unsafe_allow_html=True)
+
+    with st.expander("🔍 View model input features"):
+        st.write(pd.DataFrame(X_input))
+
+    # Export summary
+    summary_text = f"""
+User ID: {user_id}
+Contract: {user_data['Contract Length']}
+Usage: {user_data['Usage Frequency']}
+Support Calls: {user_data['Support Calls']}
+Payment Delay: {user_data['Payment Delay']} days
+Total Spend: ${user_data['Total Spend']}
+Last Interaction: {user_data['Last Interaction']} days ago
+Variant: {user_data['variant']}
+Churn Probability: {proba:.4f}
+Nudge: {st.session_state["mock_nudge"]}
+"""
+    st.download_button(
+        label="📥 Download User Summary",
+        data=summary_text,
+        file_name=f"user_{user_id}_summary.txt",
+        mime="text/plain"
+    )
 
     st.caption("Built with ❤️ by Tanesh • Real ML-powered product analytics platform")
 
@@ -119,15 +145,7 @@ with tab1:
 # ---------------------------
 with tab2:
     st.subheader("📊 System-wide Metrics")
-
-    st.markdown("**Contract Type Segmentation**")
-    st.bar_chart(df["Contract Length"].value_counts())
-
-    st.markdown("**Support Call Frequency**")
-    st.bar_chart(df["Support Calls"].value_counts().sort_index())
-
-    st.markdown("**Payment Delay Distribution**")
-    st.bar_chart(df["Payment Delay"].value_counts().sort_index())
-
-    st.markdown("**Usage Frequency Distribution**")
-    st.bar_chart(df["Usage Frequency"].value_counts().sort_index())
+    st.bar_chart(df["Contract Length"].value_counts(), use_container_width=True)
+    st.bar_chart(df["Support Calls"].value_counts().sort_index(), use_container_width=True)
+    st.bar_chart(df["Payment Delay"].value_counts().sort_index(), use_container_width=True)
+    st.bar_chart(df["Usage Frequency"].value_counts().sort_index(), use_container_width=True)
