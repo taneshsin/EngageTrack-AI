@@ -1,53 +1,60 @@
 # 🚀 EngageTrack AI – Feature Overview
 
-EngageTrack AI is a simulated AI-powered productivity and engagement insight platform built for showcasing product thinking, DevOps workflows, and analytics skills.
+**EngageTrack AI** is a simulated AI-powered productivity and lifecycle analytics platform built to showcase product strategy, DevOps maturity, and applied ML skills.
 
-This project mimics how modern SaaS products personalize user journeys using AI, lifecycle nudges, and A/B experimentation.
+It demonstrates how modern SaaS products personalize engagement using nudges, churn prediction, and A/B experimentation — all fully deployed using containerized infrastructure and CI/CD workflows.
 
 ---
 
 ## 🔧 Core Features
 
-### 1. 👤 Persona-Based Insights
-- Simulated user personas (e.g., Student, Marketer, Writer, Analyst)
-- Personalized plans and lifecycle states
+### 1. 👤 Persona-Based Lifecycle Insights
+- Simulated users with distinct personas: *Student*, *Marketer*, *Analyst*, *Writer*
+- Each user has custom lifecycle context (plan type, engagement level, churn risk)
 
-### 2. 🧠 AI-Generated Nudges (Mocked)
-- Simulates GPT-style nudges based on persona and engagement level
-- Generated on login and refreshed on button click
-- Demonstrates personalization + lifecycle marketing logic
+### 2. 🧠 AI-Generated Nudges (Simulated)
+- Rule-based nudging system mimicking GPT-style behavior
+- Personalized nudges triggered on login or refresh
+- Simulates feature discovery, habit formation, and user retention logic
 
-### 3. 📊 Engagement & Churn Dashboard
-- System-wide breakdown of:
-  - Engagement levels (bar chart)
-  - Churn risk distribution
-  - Plan segmentation
-  - A/B variant split
+### 3. 📊 Engagement & Churn Analytics
+- Interactive dashboard showing:
+  - 🔥 Engagement level distribution
+  - 🚨 Churn risk levels
+  - 💡 Plan segmentation (Free, Premium, etc.)
+  - 🧪 A/B variant population split
 
-### 4. 🧪 A/B Test Simulation
-- Users are randomly assigned to Variant A or B
-- Visualizes distribution and allows for experimentation logic
+### 4. 🧪 A/B Testing Simulation
+- Randomized Variant A/B assignment per user
+- Allows testing of differentiated UX or nudging strategies
+- Variant split visualized on dashboard
 
 ### 5. 📥 Downloadable User Summary
-- Export per-user engagement insights and AI recommendations
+- One-click export of the user’s:
+  - Persona and plan
+  - Churn risk and engagement score
+  - Nudge and feature recommendations
 
-### 6. 🔁 Mock API & Logging
-- Simulated mock API generation (`mock_api.py`)
-- User interaction logs stored securely in `/tmp/usage.log`
-
----
-
-## 🛠 Technical Highlights
-
-| Stack              | Tool/Tech                         |
-|-------------------|-----------------------------------|
-| Frontend          | Streamlit                         |
-| Backend Logic     | Python                            |
-| Containerization  | Docker + Docker Compose           |
-| Orchestration     | Azure Kubernetes Service (AKS)    |
-| CI/CD             | GitHub Actions → ACR → AKS        |
-| Hosting           | Azure Load Balancer + Ingress     |
+### 6. 🔁 Mock API + Secure Logging
+- `mock_api.py` simulates real-time nudge generation logic
+- User activity securely logged to `/tmp/usage.log`
+- Supports lifecycle observability without real data exposure
 
 ---
 
-🎯 *This feature set simulates a complete SaaS lifecycle with full-stack delivery, making it perfect for PM, DevOps, and strategy portfolios.*
+## 🛠 Technical Stack Overview
+
+| Layer             | Tech Used                          |
+|------------------|------------------------------------|
+| Frontend UI       | Streamlit                          |
+| ML Model          | XGBoost (Churn Classification)     |
+| Backend Logic     | Python (modular `src/` structure)  |
+| Containerization  | Docker, Docker Compose             |
+| Orchestration     | Azure Kubernetes Service (AKS)     |
+| CI/CD Pipeline    | GitHub Actions → ACR → AKS         |
+| Networking        | NGINX Ingress + Azure Load Balancer|
+
+---
+
+🎯 *EngageTrack AI simulates the full product lifecycle of a modern SaaS app — from personalization to analytics — making it an ideal demo for product management, DevOps, and ML-focused roles.*
+
