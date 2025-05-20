@@ -122,11 +122,12 @@ User selects ID → Loads behavior & metadata
 
 ## 📊 Dashboard Insights
 
-🔥 **Usage Frequency Distribution** <br>  
-📅 **Contract Length Segmentation** <br>  
-📞 **Support Call Frequency** <br>  
-⏳ **Payment Delay Breakdown** <br>  
-🧪 **A/B Variant Split** (if column present)  
+🔥 **Usage Frequency Distribution**  
+🧮 **Contract Length Segmentation**  
+📞 **Support Call Frequency**  
+⏳ **Payment Delay Breakdown**  
+🧪 **A/B Variant Split** (if column present)
+
 ---
 
 ## 🧪 A/B Testing Support
