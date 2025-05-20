@@ -1,64 +1,85 @@
 # 📘 Product Requirements Document – EngageTrack AI
 
+---
+
 ## 1. 🧭 Overview
 
-EngageTrack AI is a simulated lifecycle insight and productivity enhancement platform. It is built to demonstrate AI-powered feature nudging, engagement scoring, churn detection, and A/B variant testing — without relying on sensitive user data.
+**EngageTrack AI** is a full-stack SaaS analytics simulation platform built for showcasing modern DevOps, ML integration, and product lifecycle insights. It combines real churn prediction models with simulated user personas and AI-generated feature nudges — enabling recruiters and stakeholders to evaluate end-to-end product thinking, technical skills, and deployment maturity.
+
+> 🔍 While the nudging system is rule-based and simulated, the churn prediction model is trained on a real customer behavior dataset using XGBoost.
 
 ---
 
-## 2. 🎯 Goals
+## 2. 🎯 Product Goals
 
-- Simulate a working productivity analytics platform for SaaS users
-- Demonstrate how AI-powered nudges can improve user retention
-- Show DevOps skills via containerization, CI/CD, and AKS hosting
-- Make it recruiter-facing, deployable, and product manager ready
+- ✅ Simulate an AI-enhanced SaaS lifecycle platform
+- ✅ Demonstrate churn prediction using real data + ML models
+- ✅ Showcase full DevOps stack: Docker, CI/CD, AKS deployment
+- ✅ Present product-manager-ready UX with feature nudging
+- ✅ Create a recruiter-facing, live-deployed portfolio project
 
 ---
 
 ## 3. 👥 Target Users (Simulated Personas)
 
-| Persona   | Characteristics                            |
-|-----------|--------------------------------------------|
-| Student   | Low attention span, likes gamified nudges  |
-| Marketer  | Seeks campaign performance tips            |
-| Analyst   | Focused on insights and dashboard clarity  |
-| Writer    | Prefers quiet engagement reminders         |
+| Persona   | Key Traits                                      |
+|-----------|-------------------------------------------------|
+| Student   | Easily distracted, responds to gamified nudges  |
+| Marketer  | Interested in campaign insights and ROI tracking|
+| Analyst   | Data-driven, explores usage and segmentation     |
+| Writer    | Prefers quiet reminders and minimal disruption  |
+
+These personas are simulated to demonstrate tailored nudges and engagement strategies.
 
 ---
 
-## 4. 🧩 Key Features
+## 4. 🧩 Core Features
 
 | Feature                          | Description |
 |----------------------------------|-------------|
-| AI-Generated Nudges              | GPT-like text suggestions for user re-engagement |
-| Engagement & Churn Dashboard     | High-level metrics and distribution views |
-| A/B Variant Assignment           | Random assignment to simulate experiment setup |
-| Per-user Detail View             | Drill-down by persona, churn risk, and feature use |
-| Download Summary                 | One-click export of user lifecycle insights |
-| Logging & Mock API               | Simulated analytics + user nudge generation logs |
+| 🧠 Real Churn Prediction         | XGBoost model trained on real user behavior dataset |
+| 🔄 Simulated AI Nudges          | Rule-based prompts mimicking GPT-like engagement tips |
+| 📊 Dashboard + Metrics View     | System-wide breakdown of churn, engagement, and variants |
+| 🧪 A/B Variant Assignment        | Randomized bucket assignment per user |
+| 🔍 Per-user Detail View         | Churn risk, last activity, plan type, persona, and feature suggestion |
+| 📥 One-Click Summary Export     | Downloadable user lifecycle overview (TXT format) |
+| 🧾 Logging + Nudge Tracking     | Lifecycle and mock-nudge logs saved in secure runtime folders |
 
 ---
 
-## 5. 📈 Metrics for Success
+## 5. 📈 Success Metrics (MVP)
 
-| Metric                | Target |
-|-----------------------|--------|
-| Successful CI/CD run  | ✅     |
-| User nudge generation | ✅     |
-| App uptime (AKS)      | ✅     |
-| Variant balance       | ~50/50 |
-
----
-
-## 6. 🛣️ Future Enhancements
-
-- OAuth Login / Basic Auth
-- Real-time interaction tracking
-- True LLM-powered nudge integration (OpenAI, Cohere)
-- User analytics history and engagement scoring model
-- Admin dashboard for feature toggles and variant override
+| Metric                     | Target         |
+|----------------------------|----------------|
+| CI/CD pipeline passes      | ✅ (GitHub Actions) |
+| AKS deployment success     | ✅ (Auto rollout)   |
+| Model churn prediction     | ✅ (Real model)     |
+| A/B variant distribution   | ~50/50           |
+| App uptime                 | ✅ Public URL live |
+| Nudge + export behavior    | ✅ Functional     |
 
 ---
 
-📅 **Release Date:** May 2025  
-🔧 **Maintainer:** Tanesh Singhal  
+## 6. 🔮 Future Enhancements
+
+| Feature                                  | Priority | Notes |
+|------------------------------------------|----------|-------|
+| 🔐 OAuth / Basic Auth login              | Medium   | Restrict admin access to dashboards |
+| 🧠 GPT / LLM-powered nudge API           | High     | Replace rule-based nudges with real AI |
+| 📊 Cohort-level churn + engagement charts| Medium   | For PM and marketing views |
+| 🧰 Admin dashboard & feature toggles     | Medium   | Control which modules are active |
+| 🔁 Feedback loop for model improvement   | Low      | Capture real nudge effectiveness |
+| 📈 Live usage tracking and analytics     | Medium   | Append logs to historical metrics |
+
+---
+
+## 📌 Project Info
+
+- **Release Date:** May 2025  
+- **Maintainer:** [Tanesh Singhal](https://github.com/taneshsin)  
+- **GitHub Repo:** [EngageTrack-AI](https://github.com/taneshsin/EngageTrack-AI)  
+- **Deployment Stack:** Streamlit • Docker • GitHub Actions • AKS • Python (XGBoost)
+
+---
+
+🧠 *Designed as a product demo for DevOps, ML, and PM portfolio readiness.*
