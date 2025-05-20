@@ -2,7 +2,7 @@
 
 **EngageTrack AI** is a simulated SaaS product analytics platform that visualizes user lifecycle insights, churn risk, engagement levels, and delivers AI-powered nudges. It mimics how modern AI-enabled SaaS platforms use behavioral signals and personalization to drive engagement.
 
-Built with **Streamlit + Docker + GitHub Actions + Azure AKS**, this project showcases **product strategy, DevOps maturity, and full-stack delivery**.
+Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this project showcases **product strategy, DevOps maturity, and full-stack delivery**.
 
 ---
 
@@ -15,16 +15,18 @@ Built with **Streamlit + Docker + GitHub Actions + Azure AKS**, this project sho
 
 ## 🚀 Features
 
-- ✅ Simulated user personas (Writer, Analyst, Marketer, etc.)
-- ✅ AI-generated feature nudges via mock GPT-style logic
-- ✅ Churn risk detection and engagement scoring
-- ✅ A/B variant assignment and experiment tracking
-- ✅ Per-user report export as `.txt` file
-- ✅ Usage logging and audit trail (`/tmp/usage.log`)
-- ✅ Fully containerized and deployed on Azure AKS
-- ✅ Bar chart dashboard: churn, engagement, variants
-- ✅ Modularized `src/` architecture for scalability
 
+- ✅ Real churn prediction using XGBoost classifier
+- ✅ AI-generated feature nudges via mock logic
+- ✅ Per-user churn probability score with insights
+- ✅ A/B variant assignment (`churn.csv`) for simulation
+- ✅ Model input preview for every user
+- ✅ Summary export as `.txt`
+- ✅ Logging audit trail (`/tmp/usage.log`)
+- ✅ Dashboard charts: engagement, contract, churn, variants
+- ✅ Modular Streamlit UI with sidebar branding
+- ✅ Deployed via Docker + GitHub Actions → Azure AKS
+- ✅ Notebook with SHAP-based explainability
 ---
 
 ## 📦 Tech Stack
@@ -33,10 +35,11 @@ Built with **Streamlit + Docker + GitHub Actions + Azure AKS**, this project sho
 |---------------|--------------------------------------------|
 | UI / Frontend | Streamlit                                 |
 | Backend       | Python, Pandas                            |
-| AI Engine     | Simulated via `mock_api.py`               |
+| ML Model      | XGBoost (churn classifier)                |
+| Preprocessing | LabelEncoder, StandardScaler              |
 | DevOps        | Docker, GitHub Actions, Azure AKS         |
 | Infra         | NGINX reverse proxy, LoadBalancer ingress |
-| Data Source   | CSV-based simulated user behavior         |
+| Data Source   | `churn.csv` (simulated SaaS behavior)     |
 
 ---
 
@@ -61,10 +64,10 @@ EngageTrack-AI/
 ├── logs/ # Logs are redirected to /tmp in cloud  
 │  
 ├── data/ # Input data  
-│ └── user_recommendations.csv  
+│ └── churn.csv  
 │  
-├── notebooks/ # Development notebooks  
-│ └── *.ipynb  
+├── notebooks/
+│ └── churn_model.ipynb
 │  
 ├── docs/ # Documentation  
 │ └── PRD.md, Features.md, etc.  
@@ -78,7 +81,8 @@ EngageTrack-AI/
 ├── engagetrack-ingress.yaml  
 ├── engagetrack-service.yaml  
 ├── nginx.conf  
-├── .gitignore  
+├── .gitignore
+├── .dockerignore
 └── README.md  
 ```
 ---
@@ -103,29 +107,31 @@ docker run -p 8501:8501 engagetrack
 
 ## 🧠 System Logic
 ```bash
-User selects ID → Loads data
-  ↳ Engagement + Churn Risk Calculated
-  ↳ Mock AI generates feature nudge
-  ↳ Lifecycle message shown
-  ↳ Export report (TXT) enabled
-  ↳ Dashboard visualizes trends
+User selects ID → Loads behavior & metadata
+   ↳ Churn model (XGBoost) predicts risk
+   ↳ AI nudge generated via mock_api
+   ↳ Metadata + prediction shown in UI
+   ↳ Optional export as summary .txt
+   ↳ Dashboard shows aggregated insights
 ```
+✅ If variant is missing in dataset, manually add it using assign_variants.py
+✅ Payment Delay is log-transformed for ML stability
 ---
 
 ## 📊 Dashboard Insights
 
-🔥 **Engagement Level Distribution** <br>
-🚨 **Churn Risk Segmentation** <br>
-📦 **Plan Type Breakdown** <br>
-🧪 **A/B Variant Allocation**
-
+🔥 **Usage Frequency Distribution** <br>
+📅 **Contract Length Segmentation** <br>
+📞 **Support Call Frequency** <br>
+⏳ **Payment Delay Breakdown** <br>
+🧪 **A/B Variant Split** (if column present)
 ---
 
 ## 🧪 A/B Testing Support
 
-- Each user is randomly assigned Variant A or B
-- View experiment results in the dashboard
-- Demonstrates experimentation infrastructure simulation
+- Users are randomly tagged with A/B via assign_variants.py
+- Variant shows in user insights and dashboard
+- Demonstrates simple experimentation workflow
 
 ---
 
@@ -145,6 +151,18 @@ User selects ID → Loads data
 - NGINX + IP controls + rate limiting available  
 
 See Security.md for full details.
+
+---
+
+## 🧪 Model Explainability
+
+A Jupyter notebook with:  
+
+- Model training
+- ROC + confusion matrix
+- SHAP explainability plot  
+
+File: notebooks/churn_model.ipynb
 
 ---
 
