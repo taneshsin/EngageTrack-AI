@@ -1,5 +1,8 @@
-# data_loader.py
 import pandas as pd
 
 def load_user_data():
-    return pd.read_csv("data/user_recommendations.csv")
+    """
+    Load the real customer churn dataset for EngageTrack AI.
+    Returns the full DataFrame with all features for dashboard use.
+    """
+    return pd.read_csv("data/customer_churn_dataset-testing-master.csv")
