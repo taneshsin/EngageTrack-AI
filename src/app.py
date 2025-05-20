@@ -1,5 +1,9 @@
 
 import streamlit as st
+
+# ✅ Set page config immediately after import
+st.set_page_config(page_title="EngageTrack AI", layout="centered")
+
 import pandas as pd
 import datetime
 import os
@@ -41,7 +45,6 @@ def train_churn_model():
 
 churn_model, churn_scaler, churn_encoders, churn_features = train_churn_model()
 
-st.set_page_config(page_title="EngageTrack AI", layout="centered")
 tab1, tab2 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard"])
 
 # ---------------------------
