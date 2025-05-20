@@ -8,17 +8,6 @@ import pandas as pd
 import datetime
 import os
 
-# ✅ DEBUG: Show working directory and files in data/ using Streamlit
-cwd = os.getcwd()
-st.text(f"🛠 Working directory: {cwd}")
-
-try:
-    files = os.listdir("data")
-    st.text(f"📁 Files in /data/: {files}")
-except Exception as e:
-    st.error(f"❌ Could not list /data/: {e}")
-
-
 from data_loader import load_user_data
 from mock_api import generate_mock_nudge
 from recommendation_engine import get_engagement_color, get_churn_color
