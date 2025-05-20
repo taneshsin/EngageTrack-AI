@@ -23,7 +23,6 @@ notebooks/
 .env.*
 
 # Raw or large data (already in repo or generated)
-data/*.csv
 logs/
 
 # Docker-related files
