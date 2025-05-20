@@ -3,6 +3,18 @@ import streamlit as st
 # ✅ Set page config immediately after import
 st.set_page_config(page_title="EngageTrack AI", layout="centered")
 
+# ✅ Sidebar Branding
+with st.sidebar:
+    st.header("📊 EngageTrack AI")
+    st.markdown("Simulated user insights & churn prediction platform.")
+    st.markdown("---")
+    st.write("Built with Streamlit + XGBoost + Docker + AKS")
+
+# ✅ App Title & Intro
+st.title("🚀 EngageTrack AI – User Lifecycle & Churn Insight Platform")
+st.caption("Simulated SaaS analytics tool with ML-based churn prediction, engagement nudging, and A/B experimentation.")
+st.markdown("---")
+
 import pandas as pd
 import datetime
 import os
@@ -36,7 +48,15 @@ def train_churn_model():
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    model = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss')
+    model = xgb.XGBClassifier(
+        use_label_encoder=False,
+        eval_metric='logloss',
+        max_depth=4,
+        learning_rate=0.1,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        n_estimators=100
+    )
     model.fit(X_scaled, y)
 
     return model, scaler, le_dict, X.columns.tolist()
@@ -52,7 +72,6 @@ with tab1:
     user_id = st.selectbox("Choose a user:", df["CustomerID"].unique())
     user_data = df[df["CustomerID"] == user_id].iloc[0]
 
-    # Log view
     LOG_PATH = "/tmp/usage.log"
     try:
         with open(LOG_PATH, "a") as log_file:
@@ -60,7 +79,6 @@ with tab1:
     except Exception as e:
         st.warning(f"⚠️ Logging failed: {e}")
 
-    # Nudge
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge"):
         st.session_state["mock_nudge"] = generate_mock_nudge(
@@ -80,8 +98,8 @@ with tab1:
         )
     st.info(st.session_state["mock_nudge"])
 
-    # User metadata
     st.markdown(f"**📅 Contract Type:** {user_data['Contract Length']}")
+    st.markdown(f"**🧾 Subscription Type:** {user_data['Subscription Type']}")
     st.markdown(f"**🔥 Usage Frequency:** <span style='color:{get_engagement_color(user_data['Usage Frequency'])}'>{user_data['Usage Frequency']}</span>", unsafe_allow_html=True)
     st.markdown(f"**📞 Support Calls:** {user_data['Support Calls']}")
     st.markdown(f"**⏳ Payment Delay:** {user_data['Payment Delay']} days")
@@ -91,9 +109,7 @@ with tab1:
 
     st.divider()
 
-    # Churn prediction
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
-
     input_row = user_data.to_frame().T.copy()
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
         input_row[col] = churn_encoders[col].transform(input_row[col])
@@ -104,7 +120,6 @@ with tab1:
     pred = churn_model.predict(X_input_scaled)[0]
     proba = churn_model.predict_proba(X_input_scaled)[0][1]
 
-    # Prediction result
     if pred == 1:
         st.error("❌ Model predicts user will churn.")
     else:
@@ -118,10 +133,10 @@ with tab1:
     with st.expander("🔍 View model input features"):
         st.write(pd.DataFrame(X_input))
 
-    # Export summary
     summary_text = f"""
 User ID: {user_id}
 Contract: {user_data['Contract Length']}
+Subscription Type: {user_data['Subscription Type']}
 Usage: {user_data['Usage Frequency']}
 Support Calls: {user_data['Support Calls']}
 Payment Delay: {user_data['Payment Delay']} days
@@ -139,6 +154,17 @@ Nudge: {st.session_state["mock_nudge"]}
     )
 
     st.caption("Built with ❤️ by Tanesh • Real ML-powered product analytics platform")
+
+    with st.expander("ℹ️ About this app"):
+        st.markdown("""
+        **EngageTrack AI** is a simulated ML-powered analytics platform for:
+        - 🧠 AI-driven nudging
+        - 📊 User lifecycle visualization
+        - 🔮 Churn prediction
+        - 🧪 A/B testing simulation
+
+        Built with ❤️ by [Tanesh Singhal](https://github.com/taneshsin) • May 2025
+        """)
 
 # ---------------------------
 # TAB 2: Dashboard
