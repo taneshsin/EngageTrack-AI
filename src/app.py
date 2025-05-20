@@ -46,7 +46,7 @@ def train_churn_model():
         churn_df[col] = le.fit_transform(churn_df[col])
         le_dict[col] = le
 
-    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type", "variant"])
+    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type", "variant"], errors='ignore')
     y = churn_df["Churn"]
 
     scaler = StandardScaler()
