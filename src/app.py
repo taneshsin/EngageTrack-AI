@@ -1,16 +1,16 @@
 import streamlit as st
 
-# ✅ Set page config immediately after import
+# ✅ Page config
 st.set_page_config(page_title="EngageTrack AI", layout="centered")
 
-# ✅ Sidebar Branding
+# ✅ Sidebar
 with st.sidebar:
     st.header("📊 EngageTrack AI")
     st.markdown("Simulated user insights & churn prediction platform.")
     st.markdown("---")
     st.write("Built with Streamlit + XGBoost + Docker + AKS")
 
-# ✅ App Title & Intro
+# ✅ Title & Description
 st.title("🚀 EngageTrack AI – User Lifecycle & Churn Insight Platform")
 st.caption("Simulated SaaS analytics tool with ML-based churn prediction, engagement nudging, and A/B experimentation.")
 st.markdown("---")
@@ -18,6 +18,7 @@ st.markdown("---")
 import pandas as pd
 import datetime
 import os
+import numpy as np
 
 from data_loader import load_user_data
 from mock_api import generate_mock_nudge
@@ -32,9 +33,13 @@ df = load_user_data()
 # ✅ Churn model training
 @st.cache_resource
 def train_churn_model():
-    churn_df = pd.read_csv("data/customer_churn_dataset-testing-master.csv").copy()
-    churn_df = churn_df.drop(columns=["CustomerID"])
+    churn_df = pd.read_csv("data/churn.csv").copy()
 
+    # Drop ID, transform target, transform Payment Delay
+    churn_df = churn_df.drop(columns=["CustomerID"])
+    churn_df["Payment Delay"] = np.log1p(churn_df["Payment Delay"])
+
+    # Encode categoricals
     label_cols = ['Gender', 'Subscription Type', 'Contract Length']
     le_dict = {}
     for col in label_cols:
@@ -42,12 +47,14 @@ def train_churn_model():
         churn_df[col] = le.fit_transform(churn_df[col])
         le_dict[col] = le
 
-    X = churn_df.drop(columns=["Churn"])
+    # Train/Test Data
+    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type"])  # Removed weak features from model
     y = churn_df["Churn"]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
+    # XGBoost with regularization
     model = xgb.XGBClassifier(
         use_label_encoder=False,
         eval_metric='logloss',
@@ -55,6 +62,8 @@ def train_churn_model():
         learning_rate=0.1,
         subsample=0.8,
         colsample_bytree=0.8,
+        reg_lambda=1.0,
+        reg_alpha=0.2,
         n_estimators=100
     )
     model.fit(X_scaled, y)
@@ -72,6 +81,7 @@ with tab1:
     user_id = st.selectbox("Choose a user:", df["CustomerID"].unique())
     user_data = df[df["CustomerID"] == user_id].iloc[0]
 
+    # Log view
     LOG_PATH = "/tmp/usage.log"
     try:
         with open(LOG_PATH, "a") as log_file:
@@ -79,6 +89,7 @@ with tab1:
     except Exception as e:
         st.warning(f"⚠️ Logging failed: {e}")
 
+    # Nudge
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge"):
         st.session_state["mock_nudge"] = generate_mock_nudge(
@@ -98,8 +109,9 @@ with tab1:
         )
     st.info(st.session_state["mock_nudge"])
 
-    st.markdown(f"**📅 Contract Type:** {user_data['Contract Length']}")
+    # Metadata Display
     st.markdown(f"**🧾 Subscription Type:** {user_data['Subscription Type']}")
+    st.markdown(f"**📅 Contract Type:** {user_data['Contract Length']}")
     st.markdown(f"**🔥 Usage Frequency:** <span style='color:{get_engagement_color(user_data['Usage Frequency'])}'>{user_data['Usage Frequency']}</span>", unsafe_allow_html=True)
     st.markdown(f"**📞 Support Calls:** {user_data['Support Calls']}")
     st.markdown(f"**⏳ Payment Delay:** {user_data['Payment Delay']} days")
@@ -110,11 +122,15 @@ with tab1:
     st.divider()
 
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
+
+    # Prepare input for model
     input_row = user_data.to_frame().T.copy()
+    input_row["Payment Delay"] = np.log1p(input_row["Payment Delay"])  # Apply same transform
+
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
         input_row[col] = churn_encoders[col].transform(input_row[col])
 
-    X_input = input_row.drop(columns=["CustomerID", "Churn"])
+    X_input = input_row[churn_features]
     X_input_scaled = churn_scaler.transform(X_input)
 
     pred = churn_model.predict(X_input_scaled)[0]
