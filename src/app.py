@@ -19,6 +19,8 @@ import pandas as pd
 import datetime
 import os
 import numpy as np
+import shap
+import matplotlib.pyplot as plt
 
 from data_loader import load_user_data
 from mock_api import generate_mock_nudge
@@ -48,7 +50,7 @@ def train_churn_model():
         le_dict[col] = le
 
     # Train/Test Data
-    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type"])  # Removed weak features from model
+    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type"])
     y = churn_df["Churn"]
 
     scaler = StandardScaler()
@@ -72,7 +74,7 @@ def train_churn_model():
 
 churn_model, churn_scaler, churn_encoders, churn_features = train_churn_model()
 
-tab1, tab2 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard"])
+tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "🧠 Explainability"])
 
 # ---------------------------
 # TAB 1: User Insights
@@ -125,11 +127,9 @@ with tab1:
 
     # Prepare input for model
     input_row = user_data.to_frame().T.copy()
-    input_row["Payment Delay"] = np.log1p(input_row["Payment Delay"])  # Apply same transform
-
+    input_row["Payment Delay"] = np.log1p(input_row["Payment Delay"])
     for col in ['Gender', 'Subscription Type', 'Contract Length']:
         input_row[col] = churn_encoders[col].transform(input_row[col])
-
     X_input = input_row[churn_features]
     X_input_scaled = churn_scaler.transform(X_input)
 
@@ -193,3 +193,25 @@ with tab2:
     st.bar_chart(df["Usage Frequency"].value_counts().sort_index(), use_container_width=True)
     st.markdown("**🧪 A/B Variant Distribution**")
     st.bar_chart(df["variant"].value_counts(), use_container_width=True)
+
+# ---------------------------
+# TAB 3: SHAP Explainability
+# ---------------------------
+with tab3:
+    st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
+
+    full_input = df.copy()
+    full_input["Payment Delay"] = np.log1p(full_input["Payment Delay"])
+
+    for col in ['Gender', 'Subscription Type', 'Contract Length']:
+        full_input[col] = churn_encoders[col].transform(full_input[col])
+
+    X_full = full_input[churn_features]
+    X_scaled = churn_scaler.transform(X_full)
+
+    explainer = shap.Explainer(churn_model)
+    shap_values = explainer(X_scaled)
+
+    fig, ax = plt.subplots()
+    shap.summary_plot(shap_values, features=X_scaled, feature_names=churn_features, show=False)
+    st.pyplot(fig)
