@@ -8,6 +8,10 @@ import pandas as pd
 import datetime
 import os
 
+# ✅ DEBUG: Show working directory and data folder contents
+print("🛠 Current working dir:", os.getcwd())
+print("📁 Files in /app/data:", os.listdir("data"))
+
 from data_loader import load_user_data
 from mock_api import generate_mock_nudge
 from recommendation_engine import get_engagement_color, get_churn_color
