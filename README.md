@@ -51,6 +51,10 @@ Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this p
 ### 📊 Dashboard Visuals
 ![Dashboard](screenshots/dashboard_tab.png)
 
+### 📊 SHAP Plot
+![SHAP](screenshots/shap.png)
+
+
 ## 📂 Folder Structure
 
 ```bash
