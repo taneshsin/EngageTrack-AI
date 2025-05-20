@@ -46,15 +46,12 @@ def train_churn_model():
         churn_df[col] = le.fit_transform(churn_df[col])
         le_dict[col] = le
 
+    # Drop any non-numeric column (like 'variant') if still present
     if 'variant' in churn_df.columns:
         churn_df = churn_df.drop(columns=["variant"])
 
     X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type"])
     y = churn_df["Churn"]
-
-    # Class balancing
-    neg, pos = y.value_counts()[0], y.value_counts()[1]
-    spw = neg / pos
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -68,8 +65,7 @@ def train_churn_model():
         colsample_bytree=0.8,
         reg_lambda=1.0,
         reg_alpha=0.2,
-        n_estimators=100,
-        scale_pos_weight=spw
+        n_estimators=100
     )
     model.fit(X_scaled, y)
 
@@ -80,13 +76,16 @@ churn_model, churn_scaler, churn_encoders, churn_features = train_churn_model()
 # Tabs
 tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "🧠 Explainability"])
 
-# TAB 1
+# ---------------------------
+# TAB 1: User Insights
+# ---------------------------
 with tab1:
     user_id = st.selectbox("Choose a user:", df["CustomerID"].unique())
     user_data = df[df["CustomerID"] == user_id].iloc[0]
 
+    LOG_PATH = "/tmp/usage.log"
     try:
-        with open("/tmp/usage.log", "a") as log_file:
+        with open(LOG_PATH, "a") as log_file:
             log_file.write(f"[{datetime.datetime.now()}] Viewed: {user_id}\n")
     except Exception as e:
         st.warning(f"⚠️ Logging failed: {e}")
@@ -110,16 +109,15 @@ with tab1:
         )
     st.info(st.session_state["mock_nudge"])
 
-    # Metadata
-    st.markdown(f"**📿 Subscription Type:** {user_data['Subscription Type']}")
-    st.markdown(f"**🔕 Contract Type:** {user_data['Contract Length']}")
+    st.markdown(f"**📟 Subscription Type:** {user_data['Subscription Type']}")
+    st.markdown(f"**🗕 Contract Type:** {user_data['Contract Length']}")
     st.markdown(f"**🔥 Usage Frequency:** <span style='color:{get_engagement_color(user_data['Usage Frequency'])}'>{user_data['Usage Frequency']}</span>", unsafe_allow_html=True)
     st.markdown(f"**📞 Support Calls:** {user_data['Support Calls']}")
     st.markdown(f"**⏳ Payment Delay:** {user_data['Payment Delay']} days")
     st.markdown(f"**💰 Total Spend:** ${user_data['Total Spend']}")
     st.markdown(f"**🕒 Last Interaction:** {user_data['Last Interaction']} days ago")
     if 'variant' in user_data:
-        st.markdown(f"**🧷 Variant:** {user_data['variant']}")
+        st.markdown(f"**🧪 Variant:** {user_data['variant']}")
 
     st.divider()
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
@@ -135,10 +133,22 @@ with tab1:
     pred = churn_model.predict(X_input_scaled)[0]
     proba = churn_model.predict_proba(X_input_scaled)[0][1]
 
-    risk_label, risk_color = ("High", "red") if proba > 0.75 else ("Medium", "orange") if proba > 0.5 else ("Low", "green")
+    if proba > 0.75:
+        risk_label = "High"
+        risk_color = "red"
+    elif proba > 0.5:
+        risk_label = "Medium"
+        risk_color = "orange"
+    else:
+        risk_label = "Low"
+        risk_color = "green"
 
-    st.success("✅ Model predicts user will stay." if pred == 0 else "❌ Model predicts user will churn.")
-    st.markdown(f"**Churn Probability:** `{proba * 100:.2f}%`")
+    if pred == 1:
+        st.error("❌ Model predicts user will churn.")
+    else:
+        st.success("✅ Model predicts user will stay.")
+
+    st.markdown(f"**Churn Probability:** {proba * 100:.2f}%")
     st.markdown(f"**Risk Level:** <span style='color:{risk_color}'>{risk_label}</span>", unsafe_allow_html=True)
 
     with st.expander("🔍 View model input features"):
@@ -157,11 +167,18 @@ Variant: {user_data.get('variant', 'N/A')}
 Churn Probability: {proba:.4f}
 Nudge: {st.session_state["mock_nudge"]}
 """
-    st.download_button("📅 Download User Summary", data=summary_text, file_name=f"user_{user_id}_summary.txt", mime="text/plain")
+    st.download_button(
+        label="📅 Download User Summary",
+        data=summary_text,
+        file_name=f"user_{user_id}_summary.txt",
+        mime="text/plain"
+    )
 
     st.caption("Built with ❤️ by Tanesh • Real ML-powered product analytics platform")
 
-# TAB 2
+# ---------------------------
+# TAB 2: Dashboard
+# ---------------------------
 with tab2:
     st.subheader("📈 System-wide Metrics")
     st.bar_chart(df["Contract Length"].value_counts(), use_container_width=True)
@@ -169,10 +186,12 @@ with tab2:
     st.bar_chart(df["Payment Delay"].value_counts().sort_index(), use_container_width=True)
     st.bar_chart(df["Usage Frequency"].value_counts().sort_index(), use_container_width=True)
     if 'variant' in df.columns:
-        st.markdown("**🧷 A/B Variant Distribution**")
+        st.markdown("**🧪 A/B Variant Distribution**")
         st.bar_chart(df["variant"].value_counts(), use_container_width=True)
 
-# TAB 3
+# ---------------------------
+# TAB 3: SHAP Explainability
+# ---------------------------
 with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
 
