@@ -156,7 +156,7 @@ with tab1:
             idx = raw_df.index[raw_df["customerID"] == user_id][0]
             user_shap = shap_values[idx]
             fig, ax = plt.subplots(figsize=(8, 4))
-            shap.plots.waterfall(user_shap, max_display=10, show=False)
+            shap.plots.waterfall(user_shap, max_display=10, show=False, feature_names=churn_features)
             st.pyplot(fig)
         except Exception as e:
             st.error(f"Failed to render SHAP plot: {e}")
