@@ -62,6 +62,7 @@ tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "�
 with tab1:
     user_id = st.selectbox("Choose a user:", df["customerID"].unique())
     user_data = df[df["customerID"] == user_id].iloc[0]
+    variant = user_data.get("variant", None)
 
     LOG_PATH = "/tmp/usage.log"
     try:
@@ -81,6 +82,7 @@ with tab1:
             tech_support=user_data.get("TechSupport", None),
             monthly_charges=user_data.get("MonthlyCharges", None),
             paperless_billing=user_data.get("PaperlessBilling", None),
+            variant=variant,
             verbose=True
         )
         st.session_state["mock_nudge"] = (message, reasons)
@@ -94,8 +96,8 @@ with tab1:
     st.markdown(f"**🔥 Tenure (Engagement):** <span style='color:{get_engagement_color(user_data['tenure'])}'>{user_data['tenure']}</span>", unsafe_allow_html=True)
     st.markdown(f"**💳 Monthly Charges:** ${user_data['MonthlyCharges']}")
     st.markdown(f"**💸 Total Charges:** ${user_data['TotalCharges']}")
-    if 'variant' in user_data:
-        st.markdown(f"**🧪 Variant:** {user_data['variant']}")
+    if variant:
+        st.markdown(f"**🧪 Variant:** {variant}")
 
     st.divider()
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
@@ -134,8 +136,17 @@ with tab2:
     st.bar_chart(df["tenure"].value_counts().sort_index(), use_container_width=True)
     st.bar_chart(df["MonthlyCharges"].value_counts().sort_index(), use_container_width=True)
     st.bar_chart(df["TotalCharges"].value_counts().sort_index(), use_container_width=True)
+
     if 'variant' in df.columns:
+        st.subheader("🧪 A/B Variant Distribution")
         st.bar_chart(df["variant"].value_counts(), use_container_width=True)
+
+        if "Churn" in df.columns:
+            st.subheader("❌ Churn Rate by Variant")
+            churn_summary = df.groupby("variant")["Churn"].value_counts(normalize=True).unstack().fillna(0)
+            if 1 in churn_summary.columns:
+                churn_rate = churn_summary[1] * 100  # % churned
+                st.bar_chart(churn_rate)
 
 # ---------------------------
 # TAB 3: SHAP Explainability
@@ -143,8 +154,8 @@ with tab2:
 with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
     churn_df = pd.read_csv("data/churn.csv")
-    
-    # ✅ FIXED: Now requesting all 5 return values
+
+    # ✅ FIXED: Request full 5-value unpack
     X_scaled, _, _, _, _ = preprocess_user_data(
         churn_df, label_encoders=churn_encoders, fit=False, return_scaler=True
     )
