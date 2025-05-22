@@ -17,7 +17,6 @@ st.markdown("---")
 
 import pandas as pd
 import datetime
-import os
 import numpy as np
 import shap
 import matplotlib.pyplot as plt
@@ -28,8 +27,8 @@ from recommendation_engine import get_engagement_color, get_churn_color, get_chu
 
 import xgboost as xgb
 
-# Load user-facing data (raw, for UI)
-df = load_user_data()
+# ✅ Load user-facing raw data (UI needs customerID, etc.)
+df = load_user_data(raw=True)
 
 # ✅ Train churn model
 @st.cache_resource
@@ -72,23 +71,23 @@ with tab1:
         st.warning(f"⚠️ Logging failed: {e}")
 
     st.subheader("💡 AI-Generated Nudge")
-    if st.button("🔄 Generate New Nudge"):
-        st.session_state["mock_nudge"] = generate_mock_nudges(
+    if st.button("🔄 Generate New Nudge") or "mock_nudge" not in st.session_state:
+        message, reasons = generate_mock_nudges(
             user_id=user_id,
             usage_frequency=user_data["tenure"],
             support_calls=0,
             payment_delay=int(float(user_data["TotalCharges"])),
-            contract_length=user_data["Contract"]
+            contract_length=user_data["Contract"],
+            tech_support=user_data.get("TechSupport", None),
+            monthly_charges=user_data.get("MonthlyCharges", None),
+            paperless_billing=user_data.get("PaperlessBilling", None),
+            verbose=True
         )
-    if "mock_nudge" not in st.session_state:
-        st.session_state["mock_nudge"] = generate_mock_nudges(
-            user_id=user_id,
-            usage_frequency=user_data["tenure"],
-            support_calls=0,
-            payment_delay=int(float(user_data["TotalCharges"])),
-            contract_length=user_data["Contract"]
-        )
-    st.info(st.session_state["mock_nudge"])
+        st.session_state["mock_nudge"] = (message, reasons)
+
+    message, reasons = st.session_state["mock_nudge"]
+    st.info(message)
+    st.caption(f"🔍 Triggered by: {', '.join(reasons)}")
 
     st.markdown(f"**📿 Contract Type:** {user_data['Contract']}")
     st.markdown(f"**📝 Payment Method:** {user_data['PaymentMethod']}")
@@ -144,7 +143,9 @@ with tab2:
 with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
     churn_df = pd.read_csv("data/churn.csv")
-    X_scaled, _, _, _, _ = preprocess_user_data(churn_df, label_encoders=churn_encoders, fit=False, return_scaler=False)
+    X_scaled, _, _, _, _ = preprocess_user_data(
+        churn_df, label_encoders=churn_encoders, fit=False, return_scaler=False
+    )
     X_scaled = churn_scaler.transform(X_scaled)
 
     explainer = shap.Explainer(churn_model)
