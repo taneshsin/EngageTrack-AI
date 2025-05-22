@@ -9,36 +9,42 @@ It demonstrates how modern SaaS products personalize engagement using nudges, ch
 ## 🔧 Core Features
 
 ### 1. 👤 Persona-Based Lifecycle Insights
-- Simulated users with distinct personas: *Student*, *Marketer*, *Analyst*, *Writer*
-- Each user has custom lifecycle context (plan type, engagement level, churn risk)
+- Simulated users with behavioral traits and engagement patterns
+- Contextual lifecycle data (e.g., subscription type, plan duration, churn history)
 
 ### 2. 🧠 AI-Generated Nudges (Simulated)
-- Rule-based nudging system mimicking GPT-style behavior
-- Personalized nudges triggered on login or refresh
-- Simulates feature discovery, habit formation, and user retention logic
+- Multi-nudge system based on rules and mock personalization
+- Context-aware suggestions to reduce churn or boost activity
+- Nudges tagged with categories (e.g., billing, engagement, support)
 
 ### 3. 📊 Engagement & Churn Analytics
-- Interactive dashboard showing:
-  - 🔥 Engagement level distribution
-  - 🚨 Churn risk levels
-  - 💡 Plan segmentation (Free, Premium, etc.)
-  - 🧪 A/B variant population split
+- Dashboard shows:
+  - 🔥 Usage frequency breakdown
+  - ⏳ Payment delays
+  - 📞 Support calls
+  - 📅 Contract segmentation
+  - 🧪 A/B variant split
 
-### 4. 🧪 A/B Testing Simulation
-- Randomized Variant A/B assignment per user
-- Allows testing of differentiated UX or nudging strategies
-- Variant split visualized on dashboard
+### 4. 🔮 Churn Prediction
+- Real ML model (XGBoost) trained on Telco Churn dataset
+- Probabilistic predictions with calibrated output
+- SHAP-based global explainability included in UI
 
-### 5. 📥 Downloadable User Summary
-- One-click export of the user’s:
-  - Persona and plan
-  - Churn risk and engagement score
-  - Nudge and feature recommendations
+### 5. 🧪 A/B Testing Simulation
+- Auto-generated variant assignment per user
+- Dashboard chart to visualize split
+- Basis for feature experimentation workflows
 
-### 6. 🔁 Mock API + Secure Logging
-- `mock_api.py` simulates real-time nudge generation logic
-- User activity securely logged to `/tmp/usage.log`
-- Supports lifecycle observability without real data exposure
+### 6. 📥 Downloadable User Summary
+- TXT export includes:
+  - Plan details, behavior metrics
+  - Predicted churn score
+  - Personalized nudges
+
+### 7. 🔁 Mock API + Secure Logging
+- Mock API generates nudges dynamically per user
+- User interaction logs stored in `/tmp/usage.log` (Docker-safe)
+- Supports behavior audit and engagement tracking
 
 ---
 
@@ -57,4 +63,3 @@ It demonstrates how modern SaaS products personalize engagement using nudges, ch
 ---
 
 🎯 *EngageTrack AI simulates the full product lifecycle of a modern SaaS app — from personalization to analytics — making it an ideal demo for product management, DevOps, and ML-focused roles.*
-
