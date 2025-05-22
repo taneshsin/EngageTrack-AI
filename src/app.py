@@ -12,45 +12,38 @@ from data_loader import load_user_data, preprocess_user_data
 from mock_api import generate_mock_nudges
 from recommendation_engine import get_engagement_color, get_churn_color, get_churn_label
 
-# ── 1) Ensure logs directory exists ──────────────────────────────
+# Ensure logs directory exists
 LOG_DIR = "logs"
 LOG_FILE = os.path.join(LOG_DIR, "usage.log")
 os.makedirs(LOG_DIR, exist_ok=True)
 
-# ── 2) Page config ───────────────────────────────────────────────
 st.set_page_config(page_title="EngageTrack AI", layout="centered")
 
-# ── Sidebar ──────────────────────────────────────────────────────
 with st.sidebar:
     st.header("📊 EngageTrack AI")
     st.markdown("Simulated user insights & churn prediction platform.")
     st.markdown("---")
     st.write("Built with Streamlit + XGBoost + Docker + AKS")
 
-# ── Title & Description ──────────────────────────────────────────
 st.title("🚀 EngageTrack AI – User Lifecycle & Churn Insight Platform")
 st.caption("Simulated SaaS analytics tool with ML-based churn prediction, engagement nudging, and A/B experimentation.")
 st.markdown("---")
 
-# ── 3) Load RAW data once (preserves all original columns) ───────
+# Load and normalize raw data
 raw_df = load_user_data(raw=True)
 raw_df["customerID"] = raw_df["customerID"].astype(str)
+raw_df["variant"] = (
+    raw_df["variant"]
+    .astype(str)
+    .str.strip()
+    .str.upper()
+    .replace({"0": "A", "1": "B"})
+)
 
-# ── Normalize the variant column so it’s always “A” or “B” ────────
-if "variant" in raw_df.columns:
-    raw_df["variant"] = (
-        raw_df["variant"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-        .replace({"0": "A", "1": "B"})
-    )
-
-# ── 4) Train / Cache churn model ───────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def train_churn_model():
     df_full = load_user_data(raw=True)
-    X, y, scaler, encoders, features = preprocess_user_data(df_full, fit=True, return_scaler=True)
+    X, y, scaler, encoders, feature_names = preprocess_user_data(df_full, fit=True, return_scaler=True)
 
     model = xgb.XGBClassifier(
         use_label_encoder=False,
@@ -65,32 +58,23 @@ def train_churn_model():
         random_state=42,
     )
     model.fit(X, y)
-    return model, scaler, encoders, features
+    return model, scaler, encoders, feature_names
 
 churn_model, churn_scaler, churn_encoders, churn_features = train_churn_model()
 
-# ── 5) Tabs ────────────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "🧠 Explainability"])
 
-# ---------------------------
-# TAB 1: User Insights
-# ---------------------------
 with tab1:
     st.subheader("🎯 Select a User")
     user_id = st.selectbox("Choose a user:", raw_df["customerID"].unique())
 
     user_row = raw_df[raw_df["customerID"] == user_id].iloc[0]
-
-    # Safely read the normalized variant
     variant = user_row.get("variant", "Unknown")
 
     st.markdown("### 🧪 A/B Test Group")
-    st.markdown(
-        f"**Variant:** {'🅰️' if variant=='A' else '🅱️' if variant=='B' else '❓ Unknown'}"
-    )
+    st.markdown(f"**Variant:** {'🅰️' if variant=='A' else '🅱️' if variant=='B' else '❓ Unknown'}")
     st.caption(f"Raw variant value: `{variant}`")
 
-    # AI-Generated Nudge
     st.markdown("### 💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge") or "mock_nudge" not in st.session_state:
         msg, reasons = generate_mock_nudges(
@@ -111,7 +95,6 @@ with tab1:
     st.info(message)
     st.caption(f"🔍 Triggered by: {', '.join(reasons)}")
 
-    # Display user metrics
     st.markdown(f"**📃 Contract:** {user_row['Contract']}")
     st.markdown(
         f"**🔥 Tenure:** <span style='color:{get_engagement_color(user_row['tenure'])}'>{user_row['tenure']}</span>",
@@ -163,9 +146,6 @@ with tab1:
             f"variant={variant}, pred={pred}, prob={proba:.3f}\n"
         )
 
-# ---------------------------
-# TAB 2: Analytics Dashboard
-# ---------------------------
 with tab2:
     st.subheader("📈 System-wide Metrics")
 
@@ -191,9 +171,6 @@ with tab2:
     )
     st.bar_chart(churn_rates, use_container_width=True)
 
-# ---------------------------
-# TAB 3: SHAP Explainability
-# ---------------------------
 with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
     full_df = load_user_data(raw=True)
