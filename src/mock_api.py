@@ -9,11 +9,13 @@ def generate_mock_nudges(
     tech_support=None,
     monthly_charges=None,
     paperless_billing=None,
+    variant=None,
     verbose=False
 ):
     nudges = []
     reasons = []
 
+    # Base logic
     if usage_frequency < 10:
         nudges.append("Explore our quick-start tips to boost your engagement.")
         reasons.append("Low usage frequency")
@@ -42,10 +44,18 @@ def generate_mock_nudges(
         nudges.append("Switch to paperless billing for convenience and speed.")
         reasons.append("Paper billing active")
 
+    # ✅ Variant-specific nudges
+    if variant == "A":
+        nudges.append("You're in our Priority Plan – check out exclusive offers.")
+        reasons.append("Variant A")
+    elif variant == "B":
+        nudges.append("Try our new Smart Assistant to optimize your usage.")
+        reasons.append("Variant B")
+
+    # Fallback
     if not nudges:
         nudges.append("Thanks for being with us! Check out new features this month.")
         reasons.append("Default appreciation message")
 
     message = f"Hi {user_id}, {random.choice(nudges)}"
-    
     return (message, reasons) if verbose else message
