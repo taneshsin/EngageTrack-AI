@@ -23,7 +23,7 @@ import shap
 import matplotlib.pyplot as plt
 
 from data_loader import load_user_data
-from mock_api import generate_mock_nudge
+from mock_api import generate_mock_nudges
 from recommendation_engine import get_engagement_color, get_churn_color, get_churn_label
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler
