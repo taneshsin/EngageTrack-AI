@@ -6,21 +6,21 @@ Welcome to **EngageTrack AI** – a simulated SaaS analytics platform for demons
 
 ## 👤 1. Select a User
 
-Use the **dropdown menu** to choose a simulated user. Their full profile — including persona, engagement level, and churn risk — will be displayed.
+Use the **dropdown menu** to choose a simulated user. Their full profile — including subscription type, usage, support calls, and churn risk — will be displayed.
 
 ---
 
 ## 💡 2. Generate AI-Driven Recommendations
 
 - Click 🔁 **Generate New Nudge** to simulate a fresh engagement tip
-- AI nudges are tailored by persona and recent behavior
-- Feature suggestions and lifecycle tips are shown per user
+- Nudges are based on behavioral indicators such as low usage, frequent support calls, billing delays, and contract type
+- You can see tailored suggestions that help reduce churn and improve retention
 
 ---
 
 ## 📥 3. Download User Summary
 
-Click the **Download Summary** button to export all user insights (persona, plan, churn score, nudge) as a TXT file — useful for reporting or auditing.
+Click the **Download Summary** button to export user insights (plan type, delay, churn risk, and AI nudge) as a TXT file — useful for mock reporting or reviews.
 
 ---
 
@@ -28,12 +28,21 @@ Click the **Download Summary** button to export all user insights (persona, plan
 
 Navigate to the **Analytics Dashboard tab** to view:
 
-- 🔥 Engagement Level Breakdown
-- 🚨 Churn Risk Distribution
-- 💡 Plan Type Segmentation
-- 🧪 A/B Variant Distribution
+- 🔥 Usage Frequency Distribution
+- 📞 Support Call Frequency
+- ⏳ Payment Delay Distribution
+- 📅 Contract Type Breakdown
+- 🧪 A/B Variant Allocation (if available)
 
-These charts reflect the system-wide simulated user base.
+These charts reflect aggregated metrics across the simulated user base.
+
+---
+
+## 🧠 5. Understand Churn Prediction
+
+On the **Explainability** tab:
+- View SHAP summary plots explaining how each feature impacts churn risk
+- Understand which features like usage, delay, or support calls influence predictions most
 
 ---
 
@@ -44,7 +53,7 @@ These charts reflect the system-wide simulated user base.
 | Modify user data         | `data/churn.csv`           |
 | Tweak nudge responses    | `src/mock_api.py`          |
 | Update ML model behavior | `src/app.py`               |
-| Extend analytics         | `src/app.py` (tab 2 logic) |
+| Extend analytics         | `src/app.py` (tab logic)   |
 
 All source code is modular under the `src/` directory. Streamlit runs the app from `src/app.py`.
 
@@ -52,6 +61,6 @@ All source code is modular under the `src/` directory. Streamlit runs the app fr
 
 ## 📬 Support & Contributions
 
-This project is for demo and portfolio use only. For enhancements, feel free to fork the repo or open an issue.
+This project is for demo and portfolio use only. For improvements, feel free to fork the repo or open an issue.
 
 Thanks for exploring **EngageTrack AI**!
