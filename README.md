@@ -1,6 +1,6 @@
 # 📊 EngageTrack AI – Smart Productivity Insights
 
-**EngageTrack AI** is a simulated SaaS product analytics platform that visualizes user lifecycle insights, churn risk, engagement levels, and delivers AI-powered nudges. It mimics how modern AI-enabled SaaS platforms use behavioral signals and personalization to drive engagement.
+**EngageTrack AI** is a simulated SaaS analytics platform that visualizes user lifecycle insights, churn risk, engagement levels, and delivers AI-powered nudges. It mimics how modern AI-enabled SaaS products use behavioral signals and personalization to drive engagement.
 
 Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this project showcases **product strategy, DevOps maturity, and full-stack delivery**.
 
@@ -15,29 +15,30 @@ Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this p
 
 ## 🚀 Features
 
-- ✅ Real churn prediction using XGBoost (Telco dataset)
-- ✅ AI-generated nudges via rule-based mock API
-- ✅ Per-user churn probability with risk level
-- ✅ A/B variant assignment stored in `churn.csv`
-- ✅ SHAP explainability visualization (global summary)
-- ✅ One-click user summary export (TXT)
-- ✅ Logs lifecycle activity to `/tmp/usage.log`
-- ✅ Dashboard with contract, delay, engagement, variants
-- ✅ Clean Streamlit UI with tabs and sidebar branding
+- ✅ Real churn prediction using XGBoost (Telco dataset)  
+- ✅ AI-generated nudges via rule-based mock API  
+- ✅ Per-user churn probability with risk level  
+- ✅ A/B variant assignment stored in `data/churn.csv`  
+- ✅ SHAP global explainability visualization  
+- ✅ One-click user summary export (TXT)  
+- ✅ Logs lifecycle activity to `logs/usage.log`  
+- ✅ Dashboard with contract, delay, engagement & variant charts  
+- ✅ Clean Streamlit UI with tabs and sidebar branding  
 - ✅ Fully Dockerized + CI/CD to AKS
+
 ---
 
 ## 📦 Tech Stack
 
-| Layer         | Tech Used                                 |
-|---------------|--------------------------------------------|
-| UI / Frontend | Streamlit                                 |
-| ML Model      | XGBoost (binary churn classifier)         |
-| Preprocessing | Pandas, LabelEncoder, StandardScaler      |
-| Backend       | Modular Python (`src/` architecture)      |
-| DevOps        | Docker, GitHub Actions, Azure AKS         |
-| Infra         | NGINX ingress, AKS LoadBalancer           |
-| Dataset       | Telco Customer Churn (IBM Sample)         |
+| Layer         | Tech Used                                   |
+|---------------|----------------------------------------------|
+| UI / Frontend | Streamlit                                   |
+| ML Model      | XGBoost (binary churn classifier)           |
+| Preprocessing | Pandas, LabelEncoder, StandardScaler        |
+| Backend       | Modular Python (`app.py`, `data_loader.py`) |
+| DevOps        | Docker, GitHub Actions, Azure AKS           |
+| Infra         | NGINX Ingress + AKS Load Balancer            |
+| Dataset       | IBM Telco Customer Churn (+ `variant` flag) |
 
 ---
 
@@ -57,31 +58,25 @@ Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this p
 
 ```bash
 EngageTrack-AI/
+├── data/ # Input data  
+│ └── churn.csv       # Updated Telco dataset with variant column
+├── logs/
+│   └── .gitkeep             # Keeps logs/ in Git; actual usage.log is ignored
+├── notebooks/
+│   └── churn_model.ipynb    # Training & explainability notebook
 ├── src/ # Streamlit App & Modules
 │ ├── app.py  
 │ ├── data_loader.py  
 │ ├── mock_api.py  
 │ ├── recommendation_engine.py  
-│  
-├── logs/ # Logs are redirected to /tmp in cloud  
-│  
-├── data/ # Input data  
-│ └── churn.csv       # Updated Telco dataset with variant column
-│  
-├── notebooks/
-│ └── churn_model.ipynb
-│
-├── logs/            # Runtime logs (redirected to /tmp in prod)
-│
-├── docs/ # Documentation  
+├── docs/
 │   ├── PRD.md
 │   ├── Features.md
 │   ├── Help_Center.md
+│   ├── Security.md
 │   └── Release_Notes.md
-│  
 ├── Dockerfile  
-├── requirements.txt  
-├── Security.md  
+├── requirements.txt 
 ├── docker-compose.yml  
 ├── engagetrack-deploy.yaml  
 ├── engagetrack-ingress.yaml  
@@ -103,28 +98,21 @@ streamlit run src/app.py
 
 ### 🐳 Option 2: Dockerized
 ```bash
-docker build -t engagetrack .
-docker run -p 8501:8501 engagetrack
+docker build -t engagetrack-ai .
+docker run -p 8501:8501 engagetrack-ai
+# then browse http://localhost:8501
 ```
-  
-🌐 Visit the app: [http://localhost:8501](http://localhost:8501)
-
 ---
 
 ## 🧠 System Logic
 ```bash
-Select user ID →
-    ↳ Load metadata (contract, delay, calls, etc.)
-    ↳ Predict churn via XGBoost (trained model)
-    ↳ Display churn probability and risk level
-    ↳ Generate nudge via rule-based logic
-    ↳ Allow user summary download
-    ↳ Log interaction to /tmp/usage.log
+Select user → load user data (including A/B variant)
+  ↳ Preprocess (label-encode, log-transform)
+  ↳ Predict churn (XGBoost + scaler + encoders)
+  ↳ Generate nudge (rule-based)
+  ↳ Display churn % & risk level
+  ↳ Export summary & log to logs/usage.log
 ```
-✅ Payment Delay is log-transformed  
-✅ Categorical fields encoded with LabelEncoder  
-✅ SHAP values shown in Explainability tab  
-✅ Variant A/B logic handled if column exists
 ---
 
 ## 📊 Dashboard Insights
@@ -133,34 +121,25 @@ Select user ID →
 🧮 **Contract Type Distribution**  
 📞 **Support Call Frequency**  
 ⏳ **Payment Delay Breakdown**  
-🧪 **A/B Variant Assignment**
+🧪 **A/B Variant Assignment**  
+❌ **Churn Rate by Variant**  
 
 ---
 
 ## 🧪 A/B Testing Support
 
-- Users are randomly tagged with A/B via assign_variants.py
-- Variant shows in user insights and dashboard
-- Demonstrates simple experimentation workflow
+- Users are assigned A or B via the variant column in data/churn.csv  
+- Variants appear in both the User Insights view and the Dashboard  
+- Demonstrates a simple experimentation workflow
 
 ---
 
 ## 📄 Export & Logging
 
 ✅ Per-user summary export as .txt  
-✅ Logs user activity to /tmp/usage.log (container-safe)
+✅ Logs user activity to logs/usage.log (directory tracked via .gitkeep)
 
----
 
-## 🔐 Security Highlights
-
-- Runs under a non-root Docker user
-- Redirected logs to /tmp/ (write-safe in Docker)
-- No secrets or credentials pushed
-- .gitignore covers logs, system files, and config
-- NGINX + IP controls + rate limiting available  
-
-See Security.md for full details.
 
 ---
 
@@ -178,11 +157,23 @@ File: notebooks/churn_model.ipynb
 
 ## 📄 Docs & Support Files
 
-PRD.md – Product Requirements Document
-
+- PRD.md – Product Requirements Document  
 - Features.md – Detailed feature overview  
 - Help_Center.md – UI usage instructions  
-- Security.md – Security best practices
+- Security.md – Security best practices  
+- Release_Notes.md – Version history & releases  
+
+---
+
+## 🔐 Security Highlights
+
+- Runs as a non-root Docker user
+- Logs written to logs/usage.log (directory persisted via .gitkeep, log file ignored)
+- No secrets or credentials in repo
+- .gitignore and .dockerignore protect sensitive files
+- GINX ingress supports rate limiting and TLS
+
+See docs/Security.md for full details.
 
 ---
 
