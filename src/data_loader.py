@@ -3,18 +3,10 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 def load_user_data(raw=False, fit=False, label_encoders=None, scaler=None):
-    """
-    If raw=True:
-        returns the untouched DataFrame (with customerID, variant, etc.).
-    Else:
-        returns X, y, scaler, label_encoders, feature_names.
-        Pass fit=True on training to fit new encoders/scaler.
-    """
     df = pd.read_csv("data/churn.csv")
-
     if raw:
-        return df
-
+        return df  # untouched, for UI
+    # otherwise, preprocess and return arrays + transformers
     X, y, fitted_scaler, fitted_encoders, feature_names = preprocess_user_data(
         df,
         label_encoders=label_encoders,
@@ -25,27 +17,21 @@ def load_user_data(raw=False, fit=False, label_encoders=None, scaler=None):
 
 
 def preprocess_user_data(df, label_encoders=None, fit=False, return_scaler=False):
-    """
-    Cleans and encodes the churn DataFrame.
-    - Drops customerID
-    - Cleans TotalCharges + log1p
-    - Label-encodes all categoricals except 'variant'
-    - Fits or applies StandardScaler
-    """
     df = df.copy()
 
-    if "customerID" in df.columns:
-        df.drop(columns=["customerID"], inplace=True)
+    # Drop ID and UI-only column 'variant'
+    df.drop(columns=["customerID", "variant"], inplace=True, errors="ignore")
 
+    # Clean TotalCharges
     df = df[df["TotalCharges"].str.strip() != ""]
     df["TotalCharges"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
     df.dropna(inplace=True)
     df["TotalCharges"] = np.log1p(df["TotalCharges"])
 
+    # Label-encode categoricals (all object dtypes now, excluding variant which was dropped)
     if label_encoders is None:
         label_encoders = {}
-
-    label_cols = [c for c in df.select_dtypes(include="object").columns if c != "variant"]
+    label_cols = df.select_dtypes(include="object").columns.tolist()
 
     for col in label_cols:
         if fit or col not in label_encoders:
@@ -55,8 +41,10 @@ def preprocess_user_data(df, label_encoders=None, fit=False, return_scaler=False
         else:
             df[col] = label_encoders[col].transform(df[col])
 
+    # Separate target
     y = df.pop("Churn") if "Churn" in df.columns else None
 
+    # Scale features
     if fit:
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(df)
