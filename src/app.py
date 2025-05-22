@@ -20,6 +20,7 @@ import datetime
 import numpy as np
 import shap
 import matplotlib.pyplot as plt
+import io
 
 from data_loader import load_user_data, preprocess_user_data
 from mock_api import generate_mock_nudges
@@ -62,10 +63,10 @@ tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "�
 with tab1:
     user_id = st.selectbox("Choose a user:", df["customerID"].unique())
     user_data = df[df["customerID"] == user_id].iloc[0]
-    variant = user_data.get("variant", "Unknown")
+    variant = user_data["variant"] if "variant" in user_data else "Unknown"
 
     st.subheader("🧪 A/B Test Group")
-    st.markdown(f"**This user is in Variant:** `{variant}`")
+    st.markdown(f"**Variant:** {'🅰️' if variant == 'A' else '🅱️'}")
 
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge") or "mock_nudge" not in st.session_state:
@@ -120,6 +121,11 @@ with tab1:
 
     with st.expander("🔍 View model input features"):
         st.write(pd.DataFrame(X_input))
+
+    # ✅ Export prediction as TXT
+    if st.button("📤 Export Summary"):
+        summary = f"User ID: {user_id}\nVariant: {variant}\nChurn Prediction: {'Churn' if pred == 1 else 'Retain'}\nProbability: {proba * 100:.2f}%\nRisk Level: {risk_label}\n"
+        st.download_button("Download Summary", summary, file_name=f"prediction_{user_id}.txt")
 
 # ---------------------------
 # TAB 2: Dashboard
