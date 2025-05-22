@@ -73,8 +73,8 @@ EngageTrack-AI/
 ├── notebooks/
 │ └── churn_model.ipynb
 │
-├── logs/                 # Runtime logs (redirected to /tmp in prod)
-|
+├── logs/            # Runtime logs (redirected to /tmp in prod)
+│
 ├── docs/ # Documentation  
 │   ├── PRD.md
 │   ├── Features.md
