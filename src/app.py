@@ -41,9 +41,10 @@ raw_df["variant"] = (
 )
 
 @st.cache_resource(show_spinner=False)
-def train_churn_model():
+def train_and_prepare():
+    # Train model
     df_full = load_user_data(raw=True)
-    X, y, scaler, encoders, feature_names = preprocess_user_data(df_full, fit=True, return_scaler=True)
+    X, y, scaler, encoders, features = preprocess_user_data(df_full, fit=True, return_scaler=True)
 
     model = xgb.XGBClassifier(
         use_label_encoder=False,
@@ -58,9 +59,15 @@ def train_churn_model():
         random_state=42,
     )
     model.fit(X, y)
-    return model, scaler, encoders, feature_names
 
-churn_model, churn_scaler, churn_encoders, churn_features = train_churn_model()
+    # Precompute SHAP values on full set
+    explainer = shap.Explainer(model)
+    shap_vals = explainer(X)
+
+    return model, scaler, encoders, features, explainer, shap_vals, X
+
+churn_model, churn_scaler, churn_encoders, churn_features, \
+explainer, shap_values, X_full = train_and_prepare()
 
 tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "🧠 Explainability"])
 
@@ -131,6 +138,14 @@ with tab1:
         unsafe_allow_html=True,
     )
 
+    # Per-user SHAP waterfall
+    with st.expander("🧩 Why this prediction? (Per-user SHAP)"):
+        idx = raw_df.index[raw_df["customerID"] == user_id][0]
+        user_shap = shap_values[idx]
+        fig, ax = plt.subplots(figsize=(8, 4))
+        shap.plots.waterfall(user_shap, max_display=10, show=False)
+        st.pyplot(fig)
+
     summary = (
         f"User ID: {user_id}\n"
         f"Variant: {variant}\n"
@@ -148,7 +163,6 @@ with tab1:
 
 with tab2:
     st.subheader("📈 System-wide Metrics")
-
     st.markdown("**Contracts**")
     st.bar_chart(raw_df["Contract"].value_counts(), use_container_width=True)
 
@@ -173,15 +187,6 @@ with tab2:
 
 with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
-    full_df = load_user_data(raw=True)
-    X_full, _, _, _, _ = preprocess_user_data(
-        full_df, label_encoders=churn_encoders, fit=False, return_scaler=True
-    )
-    X_full_scaled = churn_scaler.transform(X_full)
-
-    explainer = shap.Explainer(churn_model)
-    shap_values = explainer(X_full_scaled)
-
     fig, ax = plt.subplots()
-    shap.summary_plot(shap_values, features=X_full_scaled, feature_names=churn_features, show=False)
+    shap.summary_plot(shap_values, features=X_full, feature_names=churn_features, show=False)
     st.pyplot(fig)
