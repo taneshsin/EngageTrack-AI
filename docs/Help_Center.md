@@ -1,6 +1,6 @@
 # 🆘 Help Center – EngageTrack AI
 
-Welcome to **EngageTrack AI** – a simulated SaaS analytics platform for demonstrating AI-powered insights, churn risk prediction, and feature nudging.
+Welcome to **EngageTrack AI** – a simulated SaaS analytics platform for demonstrating AI-powered insights, churn risk prediction, per-user explainability, and feature nudging.
 
 ---
 
@@ -24,7 +24,13 @@ Click the **Download Summary** button to export user insights (plan type, A/B va
 
 ---
 
-## 📊 4. Explore the System Dashboard
+## 🧩 4. Per-User Explainability
+
+Under **User Insights**, open the **“Why this prediction? (Per-user SHAP)”** expander to see a waterfall plot that shows the top 10 features driving the churn prediction for the selected user. Each bar is labeled with its feature name and impact.
+
+---
+
+## 📊 5. Explore the System Dashboard
 
 Navigate to the **Analytics Dashboard** tab to view:
 
@@ -39,12 +45,12 @@ These charts reflect aggregated metrics across the simulated user base.
 
 ---
 
-## 🧠 5. Understand Churn Prediction
+## 🧠 6. Understand Churn Prediction
 
 On the **Explainability** tab:
 
-- View SHAP summary plots explaining how each feature impacts churn risk  
-- Understand which features like usage, delay, support calls, or variant influence predictions most  
+- View SHAP summary plots explaining how each feature impacts churn risk globally  
+- Compare global feature impact against individual user explanations  
 
 ---
 
