@@ -27,7 +27,7 @@ from recommendation_engine import get_engagement_color, get_churn_color, get_chu
 
 import xgboost as xgb
 
-# ✅ Load user-facing raw data (UI needs customerID, etc.)
+# ✅ FIXED: Load raw version so customerID exists for UI
 df = load_user_data(raw=True)
 
 # ✅ Train churn model
