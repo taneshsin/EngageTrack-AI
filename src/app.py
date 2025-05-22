@@ -66,12 +66,14 @@ with tab1:
     user_id = st.selectbox("Choose a user:", df_shuffled["customerID"].unique())
     user_data = df_shuffled[df_shuffled["customerID"] == user_id].iloc[0]
 
-    # Robust variant decoding
-    variant_raw = str(user_data["variant"]).strip().upper()
-    variant = "A" if variant_raw in ["A", "0"] else "B"
+    # 🔍 Robust variant mapping
+    variant_map = {0: "A", 1: "B", "0": "A", "1": "B", "A": "A", "B": "B"}
+    variant_raw = str(user_data["variant"]).strip()
+    variant = variant_map.get(variant_raw, "Unknown")
 
     st.subheader("🧪 A/B Test Group")
-    st.markdown(f"**Variant:** {'🅰️' if variant == 'A' else '🅱️'}")
+    st.markdown(f"**Variant:** {'🅰️' if variant == 'A' else '🅱️' if variant == 'B' else '❓ Unknown'}")
+    st.caption(f"Raw variant value: `{variant_raw}`")
 
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge") or "mock_nudge" not in st.session_state:
