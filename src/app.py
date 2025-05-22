@@ -27,7 +27,7 @@ from recommendation_engine import get_engagement_color, get_churn_color, get_chu
 
 import xgboost as xgb
 
-# ✅ FIXED: Load raw version so customerID exists for UI
+# ✅ Load raw version so customerID exists for UI
 df = load_user_data(raw=True)
 
 # ✅ Train churn model
@@ -143,8 +143,10 @@ with tab2:
 with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
     churn_df = pd.read_csv("data/churn.csv")
+    
+    # ✅ FIXED: Now requesting all 5 return values
     X_scaled, _, _, _, _ = preprocess_user_data(
-        churn_df, label_encoders=churn_encoders, fit=False, return_scaler=False
+        churn_df, label_encoders=churn_encoders, fit=False, return_scaler=True
     )
     X_scaled = churn_scaler.transform(X_scaled)
 
