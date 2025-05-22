@@ -36,21 +36,29 @@ df = load_user_data()
 @st.cache_resource
 def train_churn_model():
     churn_df = pd.read_csv("data/churn.csv").copy()
-    churn_df = churn_df.drop(columns=["CustomerID"])
-    churn_df["Payment Delay"] = np.log1p(churn_df["Payment Delay"])
+    churn_df = churn_df.drop(columns=["customerID"])
 
-    label_cols = ['Gender', 'Subscription Type', 'Contract Length']
+    churn_df.replace("No internet service", "No", inplace=True)
+    churn_df.replace("No phone service", "No", inplace=True)
+
+    binary_cols = ["Partner", "Dependents", "PhoneService", "PaperlessBilling", "Churn"]
+    for col in binary_cols:
+        churn_df[col] = churn_df[col].map({"Yes": 1, "No": 0})
+
+    churn_df["TotalCharges"] = pd.to_numeric(churn_df["TotalCharges"], errors="coerce")
+    churn_df.dropna(inplace=True)
+
+    cat_cols = ["gender", "MultipleLines", "InternetService", "OnlineSecurity",
+                "OnlineBackup", "DeviceProtection", "TechSupport", "StreamingTV",
+                "StreamingMovies", "Contract", "PaymentMethod"]
     le_dict = {}
-    for col in label_cols:
+    for col in cat_cols:
         le = LabelEncoder()
         churn_df[col] = le.fit_transform(churn_df[col])
         le_dict[col] = le
 
-    # Drop any non-numeric column (like 'variant') if still present
-    if 'variant' in churn_df.columns:
-        churn_df = churn_df.drop(columns=["variant"])
-
-    X = churn_df.drop(columns=["Churn", "Last Interaction", "Subscription Type"])
+    features = [col for col in churn_df.columns if col != "Churn"]
+    X = churn_df[features]
     y = churn_df["Churn"]
 
     scaler = StandardScaler()
@@ -65,11 +73,12 @@ def train_churn_model():
         colsample_bytree=0.8,
         reg_lambda=1.0,
         reg_alpha=0.2,
-        n_estimators=100
+        n_estimators=100,
+        scale_pos_weight=2.5
     )
     model.fit(X_scaled, y)
 
-    return model, scaler, le_dict, X.columns.tolist()
+    return model, scaler, le_dict, features
 
 churn_model, churn_scaler, churn_encoders, churn_features = train_churn_model()
 
@@ -80,8 +89,8 @@ tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "�
 # TAB 1: User Insights
 # ---------------------------
 with tab1:
-    user_id = st.selectbox("Choose a user:", df["CustomerID"].unique())
-    user_data = df[df["CustomerID"] == user_id].iloc[0]
+    user_id = st.selectbox("Choose a user:", df["customerID"].unique())
+    user_data = df[df["customerID"] == user_id].iloc[0]
 
     LOG_PATH = "/tmp/usage.log"
     try:
@@ -93,38 +102,34 @@ with tab1:
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge"):
         st.session_state["mock_nudge"] = generate_mock_nudge(
-            user_id="there",
-            usage_frequency=user_data["Usage Frequency"],
-            support_calls=user_data["Support Calls"],
-            payment_delay=user_data["Payment Delay"],
-            contract_length=user_data["Contract Length"]
+            user_id=user_id,
+            usage_frequency=user_data["MonthlyCharges"],
+            support_calls=user_data["tenure"],
+            payment_delay=user_data["TotalCharges"],
+            contract_length=user_data["Contract"]
         )
     if "mock_nudge" not in st.session_state:
         st.session_state["mock_nudge"] = generate_mock_nudge(
-            user_id="there",
-            usage_frequency=user_data["Usage Frequency"],
-            support_calls=user_data["Support Calls"],
-            payment_delay=user_data["Payment Delay"],
-            contract_length=user_data["Contract Length"]
+            user_id=user_id,
+            usage_frequency=user_data["MonthlyCharges"],
+            support_calls=user_data["tenure"],
+            payment_delay=user_data["TotalCharges"],
+            contract_length=user_data["Contract"]
         )
     st.info(st.session_state["mock_nudge"])
 
-    st.markdown(f"**📟 Subscription Type:** {user_data['Subscription Type']}")
-    st.markdown(f"**🗕 Contract Type:** {user_data['Contract Length']}")
-    st.markdown(f"**🔥 Usage Frequency:** <span style='color:{get_engagement_color(user_data['Usage Frequency'])}'>{user_data['Usage Frequency']}</span>", unsafe_allow_html=True)
-    st.markdown(f"**📞 Support Calls:** {user_data['Support Calls']}")
-    st.markdown(f"**⏳ Payment Delay:** {user_data['Payment Delay']} days")
-    st.markdown(f"**💰 Total Spend:** ${user_data['Total Spend']}")
-    st.markdown(f"**🕒 Last Interaction:** {user_data['Last Interaction']} days ago")
-    if 'variant' in user_data:
-        st.markdown(f"**🧪 Variant:** {user_data['variant']}")
+    st.markdown(f"**🧾 Gender:** {user_data['gender']}")
+    st.markdown(f"**📶 Internet Service:** {user_data['InternetService']}")
+    st.markdown(f"**📞 Tenure:** {user_data['tenure']} months")
+    st.markdown(f"**💵 Monthly Charges:** ${user_data['MonthlyCharges']}")
+    st.markdown(f"**💰 Total Charges:** ${user_data['TotalCharges']}")
+    st.markdown(f"**📄 Contract:** {user_data['Contract']}")
 
     st.divider()
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
 
     input_row = user_data.to_frame().T.copy()
-    input_row["Payment Delay"] = np.log1p(float(input_row["Payment Delay"]))
-    for col in ['Gender', 'Subscription Type', 'Contract Length']:
+    for col in churn_encoders:
         input_row[col] = churn_encoders[col].transform(input_row[col])
 
     X_input = input_row[churn_features]
@@ -154,49 +159,20 @@ with tab1:
     with st.expander("🔍 View model input features"):
         st.write(pd.DataFrame(X_input))
 
-    summary_text = f"""
-User ID: {user_id}
-Contract: {user_data['Contract Length']}
-Subscription Type: {user_data['Subscription Type']}
-Usage: {user_data['Usage Frequency']}
-Support Calls: {user_data['Support Calls']}
-Payment Delay: {user_data['Payment Delay']} days
-Total Spend: ${user_data['Total Spend']}
-Last Interaction: {user_data['Last Interaction']} days ago
-Variant: {user_data.get('variant', 'N/A')}
-Churn Probability: {proba:.4f}
-Nudge: {st.session_state["mock_nudge"]}
-"""
-    st.download_button(
-        label="📅 Download User Summary",
-        data=summary_text,
-        file_name=f"user_{user_id}_summary.txt",
-        mime="text/plain"
-    )
-
-    st.caption("Built with ❤️ by Tanesh • Real ML-powered product analytics platform")
-
 # ---------------------------
 # TAB 2: Dashboard
 # ---------------------------
 with tab2:
     st.subheader("📈 System-wide Metrics")
 
-    st.markdown("### 📅 Contract Type Distribution")
-    st.bar_chart(df["Contract Length"].value_counts(), use_container_width=True)
+    st.markdown("### 📄 Contract Type Distribution")
+    st.bar_chart(df["Contract"].value_counts(), use_container_width=True)
 
-    st.markdown("### 📞 Support Call Frequency")
-    st.bar_chart(df["Support Calls"].value_counts().sort_index(), use_container_width=True)
+    st.markdown("### 💵 Monthly Charges Distribution")
+    st.bar_chart(df["MonthlyCharges"].value_counts().sort_index(), use_container_width=True)
 
-    st.markdown("### ⏳ Payment Delay Distribution (days)")
-    st.bar_chart(df["Payment Delay"].value_counts().sort_index(), use_container_width=True)
-
-    st.markdown("### 🔥 Usage Frequency Distribution")
-    st.bar_chart(df["Usage Frequency"].value_counts().sort_index(), use_container_width=True)
-
-    if 'variant' in df.columns:
-        st.markdown("### 🧪 A/B Variant Assignment")
-        st.bar_chart(df["variant"].value_counts(), use_container_width=True)
+    st.markdown("### 📶 Internet Service Types")
+    st.bar_chart(df["InternetService"].value_counts(), use_container_width=True)
 
 # ---------------------------
 # TAB 3: SHAP Explainability
@@ -205,8 +181,7 @@ with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
 
     full_input = df.copy()
-    full_input["Payment Delay"] = np.log1p(full_input["Payment Delay"])
-    for col in ['Gender', 'Subscription Type', 'Contract Length']:
+    for col in churn_encoders:
         full_input[col] = churn_encoders[col].transform(full_input[col])
 
     X_full = full_input[churn_features]
