@@ -32,3 +32,6 @@ logs/
 
 # 🧪 Output or build artifacts (optional)
 *.out
+
+# Ignore runtime logs
+logs/usage.log
