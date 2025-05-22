@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 from data_loader import load_user_data
 from mock_api import generate_mock_nudge
-from recommendation_engine import get_engagement_color, get_churn_color
+from recommendation_engine import get_engagement_color, get_churn_color, get_churn_label
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import xgboost as xgb
@@ -133,15 +133,8 @@ with tab1:
     pred = churn_model.predict(X_input_scaled)[0]
     proba = churn_model.predict_proba(X_input_scaled)[0][1]
 
-    if proba > 0.75:
-        risk_label = "High"
-        risk_color = "red"
-    elif proba > 0.5:
-        risk_label = "Medium"
-        risk_color = "orange"
-    else:
-        risk_label = "Low"
-        risk_color = "green"
+    risk_color = get_churn_color(proba)
+    risk_label = get_churn_label(proba)
 
     if pred == 1:
         st.error("❌ Model predicts user will churn.")
