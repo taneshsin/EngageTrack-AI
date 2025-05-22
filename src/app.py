@@ -31,6 +31,7 @@ import xgboost as xgb
 
 # ✅ Load raw data for UI
 df = load_user_data(raw=True)
+df["customerID"] = df["customerID"].astype(str)
 
 # ✅ Train churn model
 @st.cache_resource
@@ -64,11 +65,15 @@ tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "�
 with tab1:
     df_shuffled = df.sample(frac=1, random_state=42).reset_index(drop=True)
     user_id = st.selectbox("Choose a user:", df_shuffled["customerID"].unique())
-    user_data = df_shuffled[df_shuffled["customerID"] == user_id].iloc[0]
 
-    # 🔍 Robust variant mapping
+    user_row = df_shuffled.loc[df_shuffled["customerID"] == user_id]
+    if user_row.empty:
+        st.error(f"No user found with ID: {user_id}")
+        st.stop()
+
+    user_data = user_row.iloc[0]
+    variant_raw = str(user_data.get("variant", "Unknown")).strip()
     variant_map = {0: "A", 1: "B", "0": "A", "1": "B", "A": "A", "B": "B"}
-    variant_raw = str(user_data["variant"]).strip()
     variant = variant_map.get(variant_raw, "Unknown")
 
     st.subheader("🧪 A/B Test Group")
