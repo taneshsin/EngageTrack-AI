@@ -62,14 +62,18 @@ tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "�
 with tab1:
     user_id = st.selectbox("Choose a user:", df["customerID"].unique())
     user_data = df[df["customerID"] == user_id].iloc[0]
-    variant = user_data.get("variant", None)
+    variant = user_data.get("variant", "Unknown")
 
     LOG_PATH = "/tmp/usage.log"
     try:
         with open(LOG_PATH, "a") as log_file:
-            log_file.write(f"[{datetime.datetime.now()}] Viewed: {user_id}\n")
+            log_file.write(f"[{datetime.datetime.now()}] Viewed: {user_id} (Variant {variant})\n")
     except Exception as e:
         st.warning(f"⚠️ Logging failed: {e}")
+
+    # ✅ Display Variant clearly
+    st.subheader("🧪 A/B Test Group")
+    st.markdown(f"**This user is in Variant:** `{variant}`")
 
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge") or "mock_nudge" not in st.session_state:
@@ -96,8 +100,6 @@ with tab1:
     st.markdown(f"**🔥 Tenure (Engagement):** <span style='color:{get_engagement_color(user_data['tenure'])}'>{user_data['tenure']}</span>", unsafe_allow_html=True)
     st.markdown(f"**💳 Monthly Charges:** ${user_data['MonthlyCharges']}")
     st.markdown(f"**💸 Total Charges:** ${user_data['TotalCharges']}")
-    if variant:
-        st.markdown(f"**🧪 Variant:** {variant}")
 
     st.divider()
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
@@ -145,7 +147,7 @@ with tab2:
             st.subheader("❌ Churn Rate by Variant")
             churn_summary = df.groupby("variant")["Churn"].value_counts(normalize=True).unstack().fillna(0)
             if 1 in churn_summary.columns:
-                churn_rate = churn_summary[1] * 100  # % churned
+                churn_rate = churn_summary[1] * 100
                 st.bar_chart(churn_rate)
 
 # ---------------------------
@@ -155,7 +157,6 @@ with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
     churn_df = pd.read_csv("data/churn.csv")
 
-    # ✅ FIXED: Request full 5-value unpack
     X_scaled, _, _, _, _ = preprocess_user_data(
         churn_df, label_encoders=churn_encoders, fit=False, return_scaler=True
     )
