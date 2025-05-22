@@ -87,11 +87,11 @@ with tab1:
     st.info(message)
     st.caption(f"🔍 Triggered by: {', '.join(reasons)}")
 
-    st.markdown(f"**🧿 Contract Type:** {user_data['Contract']}")
-    st.markdown(f"**📄 Payment Method:** {user_data['PaymentMethod']}")
+    st.markdown(f"**📃 Contract Type:** {user_data['Contract']}")
+    st.markdown(f"**💳 Payment Method:** {user_data['PaymentMethod']}")
     st.markdown(f"**🔥 Tenure (Engagement):** <span style='color:{get_engagement_color(user_data['tenure'])}'>{user_data['tenure']}</span>", unsafe_allow_html=True)
-    st.markdown(f"**💳 Monthly Charges:** ${user_data['MonthlyCharges']}")
-    st.markdown(f"**💸 Total Charges:** ${user_data['TotalCharges']}")
+    st.markdown(f"**💸 Monthly Charges:** ${user_data['MonthlyCharges']}")
+    st.markdown(f"**💰 Total Charges:** ${user_data['TotalCharges']}")
 
     st.divider()
     st.subheader("🔮 Real Churn Prediction (Model-Based)")
@@ -127,16 +127,16 @@ with tab1:
 with tab2:
     st.subheader("📈 System-wide Metrics")
 
-    st.markdown("**📅 Contracts**")
+    st.markdown("**📃 Contracts**")
     st.bar_chart(df["Contract"].value_counts(), use_container_width=True)
 
     st.markdown("**⏳ Tenure Distribution**")
     st.bar_chart(df["tenure"].value_counts().sort_index(), use_container_width=True)
 
-    st.markdown("**💳 Monthly Charges Distribution**")
+    st.markdown("**💸 Monthly Charges Distribution**")
     st.bar_chart(df["MonthlyCharges"].value_counts().sort_index(), use_container_width=True)
 
-    st.markdown("**💸 Total Charges Distribution**")
+    st.markdown("**💰 Total Charges Distribution**")
     st.bar_chart(df["TotalCharges"].value_counts().sort_index(), use_container_width=True)
 
     if 'variant' in df.columns:
