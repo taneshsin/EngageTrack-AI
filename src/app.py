@@ -93,9 +93,22 @@ with tab1:
 
     st.subheader("\U0001F4A1 AI-Generated Nudge")
     if st.button("\U0001F504 Generate New Nudge"):
-        st.session_state["mock_nudge"] = generate_mock_nudges(user_id)
+        st.session_state["mock_nudge"] = generate_mock_nudges(
+            user_id=user_id,
+            usage_frequency=user_data["Usage Frequency"],
+            support_calls=user_data["Support Calls"],
+            payment_delay=int(float(user_data["Payment Delay"])),
+            contract_length=user_data["Contract Length"]
+        )
+
     if "mock_nudge" not in st.session_state:
-        st.session_state["mock_nudge"] = generate_mock_nudges(user_id)
+        st.session_state["mock_nudge"] = generate_mock_nudges(
+            user_id=user_id,
+            usage_frequency=user_data["Usage Frequency"],
+            support_calls=user_data["Support Calls"],
+            payment_delay=int(float(user_data["Payment Delay"])),
+            contract_length=user_data["Contract Length"]
+        )
     st.info(st.session_state["mock_nudge"])
 
     st.markdown(f"**\U0001F4B0 Monthly Charges:** ${user_data['MonthlyCharges']}")
