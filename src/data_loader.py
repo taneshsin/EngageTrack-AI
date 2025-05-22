@@ -13,12 +13,11 @@ def load_user_data(raw=False):
     else:
         return preprocess_user_data(df)[0]  # Return only preprocessed df for UI display
 
-
 def preprocess_user_data(df, label_encoders=None, fit=False, return_scaler=False):
     """
     Preprocesses the churn dataset:
     - Cleans TotalCharges
-    - Encodes categorical variables
+    - Encodes categorical variables (except 'variant')
     - Scales features
     Returns:
         X_scaled, y, (optional) scaler, encoders, feature_names
@@ -35,11 +34,12 @@ def preprocess_user_data(df, label_encoders=None, fit=False, return_scaler=False
     df.dropna(inplace=True)
     df["TotalCharges"] = np.log1p(df["TotalCharges"])
 
-    # Label encoding
+    # Label encoding, excluding 'variant'
     if label_encoders is None:
         label_encoders = {}
 
-    label_cols = df.select_dtypes(include="object").columns
+    label_cols = [col for col in df.select_dtypes(include="object").columns if col != "variant"]
+
     for col in label_cols:
         if col not in label_encoders or fit:
             le = LabelEncoder()
