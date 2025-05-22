@@ -21,6 +21,7 @@ import numpy as np
 import shap
 import matplotlib.pyplot as plt
 import io
+import random
 
 from data_loader import load_user_data, preprocess_user_data
 from mock_api import generate_mock_nudges
@@ -61,9 +62,13 @@ tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "�
 # TAB 1: User Insights
 # ---------------------------
 with tab1:
-    user_id = st.selectbox("Choose a user:", df["customerID"].unique())
-    user_data = df[df["customerID"] == user_id].iloc[0]
-    variant = user_data["variant"] if "variant" in user_data else "Unknown"
+    df_shuffled = df.sample(frac=1, random_state=42).reset_index(drop=True)
+    user_id = st.selectbox("Choose a user:", df_shuffled["customerID"].unique())
+    user_data = df_shuffled[df_shuffled["customerID"] == user_id].iloc[0]
+
+    # Robust variant decoding
+    variant_raw = str(user_data["variant"]).strip().upper()
+    variant = "A" if variant_raw in ["A", "0"] else "B"
 
     st.subheader("🧪 A/B Test Group")
     st.markdown(f"**Variant:** {'🅰️' if variant == 'A' else '🅱️'}")
@@ -122,7 +127,6 @@ with tab1:
     with st.expander("🔍 View model input features"):
         st.write(pd.DataFrame(X_input))
 
-    # ✅ Export prediction as TXT
     if st.button("📤 Export Summary"):
         summary = f"User ID: {user_id}\nVariant: {variant}\nChurn Prediction: {'Churn' if pred == 1 else 'Retain'}\nProbability: {proba * 100:.2f}%\nRisk Level: {risk_label}\n"
         st.download_button("Download Summary", summary, file_name=f"prediction_{user_id}.txt")
