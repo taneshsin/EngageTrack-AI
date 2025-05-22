@@ -30,18 +30,23 @@ It demonstrates how modern SaaS products personalize engagement using nudges, ch
 - Probabilistic predictions with calibrated outputs  
 - SHAP-based global explainability integrated in UI
 
-### 5. 🧪 A/B Testing Simulation
+### 5. 🧩 Per-User Explainability (New)
+- Waterfall plots showing top feature contributions for each selected user  
+- Labels each bar with the actual feature name from the model’s feature set  
+- Accessible via the “Why this prediction?” expander in the User Insights tab
+
+### 6. 🧪 A/B Testing Simulation
 - Dataset-driven variant assignment per user (A or B)  
 - Dashboard chart to visualize split  
 - Basis for feature experimentation workflows
 
-### 6. 📥 Downloadable User Summary
+### 7. 📥 Downloadable User Summary
 - TXT export includes:  
   - Plan details, behavior metrics  
   - Predicted churn score  
   - Personalized nudges
 
-### 7. 🔁 Mock API + Secure Logging
+### 8. 🔁 Mock API + Secure Logging
 - Mock API generates nudges dynamically per user  
 - User interaction logs written to `logs/usage.log` (directory tracked via `.gitkeep`, log file ignored)  
 - Supports behavior audit and engagement tracking
@@ -50,16 +55,16 @@ It demonstrates how modern SaaS products personalize engagement using nudges, ch
 
 ## 🛠 Technical Stack Overview
 
-| Layer             | Tech Used                          |
-|-------------------|------------------------------------|
-| Frontend UI       | Streamlit                          |
-| ML Model          | XGBoost (Churn Classification)     |
-| Backend Logic     | Python modular files (`app.py`, `data_loader.py`, etc.) |
-| Containerization  | Docker, Docker Compose             |
-| Orchestration     | Azure Kubernetes Service (AKS)     |
-| CI/CD Pipeline    | GitHub Actions → Azure Container Registry → AKS |
-| Networking        | NGINX Ingress + Azure Load Balancer|
+| Layer             | Tech Used                                                                       |
+|-------------------|---------------------------------------------------------------------------------|
+| Frontend UI       | Streamlit                                                                       |
+| ML Model          | XGBoost (Churn Classification)                                                  |
+| Backend Logic     | Python modular files (`app.py`, `data_loader.py`, etc.)                         |
+| Containerization  | Docker, Docker Compose                                                          |
+| Orchestration     | Azure Kubernetes Service (AKS)                                                  |
+| CI/CD Pipeline    | GitHub Actions → Azure Container Registry → AKS                                 |
+| Networking        | NGINX Ingress + Azure Load Balancer                                             |
 
 ---
 
-🎯 *EngageTrack AI simulates the full product lifecycle of a modern SaaS app — from personalization to analytics — making it an ideal demo for product management, DevOps, and ML-focused roles.*  
+🎯 *EngageTrack AI simulates the full product lifecycle of a modern SaaS app — from personalization to analytics and per-user explainability — making it an ideal demo for product management, DevOps, and ML-focused roles.*  
