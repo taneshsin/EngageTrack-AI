@@ -139,11 +139,26 @@ with tab1:
     st.markdown(f"**Risk Level:** <span style='color:{risk_color}'>{risk_label}</span>", unsafe_allow_html=True)
 
 with tab2:
-    st.subheader("\U0001F4C8 System Metrics")
-    st.bar_chart(df['Contract'].value_counts())
-    st.bar_chart(df['PaymentMethod'].value_counts())
-    st.bar_chart(df['tenure'].value_counts().sort_index())
-    st.bar_chart(df['MonthlyCharges'].value_counts().sort_index())
+    st.subheader("📈 System-wide Metrics")
+
+    st.markdown("### 📅 Contract Type Distribution")
+    st.bar_chart(df["Contract"].value_counts(), use_container_width=True)
+
+    st.markdown("### 💳 Payment Method Usage")
+    st.bar_chart(df["PaymentMethod"].value_counts(), use_container_width=True)
+
+    st.markdown("### 🌐 Internet Service Types")
+    st.bar_chart(df["InternetService"].value_counts(), use_container_width=True)
+
+    st.markdown("### 💰 Monthly Charges Distribution")
+    st.bar_chart(df["MonthlyCharges"].value_counts().sort_index(), use_container_width=True)
+
+    st.markdown("### 🔒 Tech Support Availability")
+    st.bar_chart(df["TechSupport"].value_counts(), use_container_width=True)
+
+    if 'variant' in df.columns:
+        st.markdown("### 🧪 A/B Variant Assignment")
+        st.bar_chart(df["variant"].value_counts(), use_container_width=True)
 
 with tab3:
     st.subheader("\U0001F9E0 SHAP Explainability")
