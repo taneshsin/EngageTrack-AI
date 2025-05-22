@@ -1,10 +1,8 @@
 # 📊 EngageTrack AI – Smart Productivity Insights
 
-**EngageTrack AI** is a simulated SaaS analytics platform designed to showcase lifecycle intelligence, churn prediction, A/B testing, and AI-powered nudges using a real customer behavior dataset.
+**EngageTrack AI** is a simulated SaaS product analytics platform that visualizes user lifecycle insights, churn risk, engagement levels, and delivers AI-powered nudges. It mimics how modern AI-enabled SaaS platforms use behavioral signals and personalization to drive engagement.
 
-This project demonstrates how modern SaaS platforms can personalize engagement, track churn risk, and simulate product experimentation — all deployed via Docker + GitHub Actions + Azure AKS.
-
----
+Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this project showcases **product strategy, DevOps maturity, and full-stack delivery**.
 
 ---
 
