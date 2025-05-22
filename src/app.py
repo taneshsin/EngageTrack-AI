@@ -12,11 +12,12 @@ from data_loader import load_user_data, preprocess_user_data
 from mock_api import generate_mock_nudges
 from recommendation_engine import get_engagement_color, get_churn_color, get_churn_label
 
-# Ensure logs directory exists
+# ── Setup logs directory ───────────────────────────────────────────
 LOG_DIR = "logs"
 LOG_FILE = os.path.join(LOG_DIR, "usage.log")
 os.makedirs(LOG_DIR, exist_ok=True)
 
+# ── Streamlit page config ────────────────────────────────────────
 st.set_page_config(page_title="EngageTrack AI", layout="centered")
 
 with st.sidebar:
@@ -29,7 +30,7 @@ st.title("🚀 EngageTrack AI – User Lifecycle & Churn Insight Platform")
 st.caption("Simulated SaaS analytics tool with ML-based churn prediction, engagement nudging, and A/B experimentation.")
 st.markdown("---")
 
-# Load and normalize raw data
+# ── Load & normalize raw data ─────────────────────────────────────
 raw_df = load_user_data(raw=True)
 raw_df["customerID"] = raw_df["customerID"].astype(str)
 raw_df["variant"] = (
@@ -40,9 +41,9 @@ raw_df["variant"] = (
     .replace({"0": "A", "1": "B"})
 )
 
+# ── Train model & precompute SHAP ─────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def train_and_prepare():
-    # Train model
     df_full = load_user_data(raw=True)
     X, y, scaler, encoders, features = preprocess_user_data(df_full, fit=True, return_scaler=True)
 
@@ -60,17 +61,26 @@ def train_and_prepare():
     )
     model.fit(X, y)
 
-    # Precompute SHAP values on full set
     explainer = shap.Explainer(model)
-    shap_vals = explainer(X)
+    X_scaled_full = scaler.transform(X)
+    shap_vals = explainer(X_scaled_full)
 
-    return model, scaler, encoders, features, explainer, shap_vals, X
+    return model, scaler, encoders, features, explainer, shap_vals, X_scaled_full
 
-churn_model, churn_scaler, churn_encoders, churn_features, \
-explainer, shap_values, X_full = train_and_prepare()
+(churn_model,
+ churn_scaler,
+ churn_encoders,
+ churn_features,
+ explainer,
+ shap_values,
+ X_full_scaled) = train_and_prepare()
 
+# ── Layout tabs ───────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["🔍 User Insights", "📈 Analytics Dashboard", "🧠 Explainability"])
 
+# ---------------------------
+# TAB 1: User Insights
+# ---------------------------
 with tab1:
     st.subheader("🎯 Select a User")
     user_id = st.selectbox("Choose a user:", raw_df["customerID"].unique())
@@ -79,7 +89,9 @@ with tab1:
     variant = user_row.get("variant", "Unknown")
 
     st.markdown("### 🧪 A/B Test Group")
-    st.markdown(f"**Variant:** {'🅰️' if variant=='A' else '🅱️' if variant=='B' else '❓ Unknown'}")
+    st.markdown(
+        f"**Variant:** {'🅰️' if variant=='A' else '🅱️' if variant=='B' else '❓ Unknown'}"
+    )
     st.caption(f"Raw variant value: `{variant}`")
 
     st.markdown("### 💡 AI-Generated Nudge")
@@ -132,19 +144,22 @@ with tab1:
     else:
         st.success("✅ Model predicts user will stay.")
 
-    st.markdown(f"**Probability:** {proba*100:.2f}%")
+    st.markdown(f"**Probability:** {proba * 100:.2f}%")
     st.markdown(
         f"**Risk Level:** <span style='color:{color}'>{label}</span>",
         unsafe_allow_html=True,
     )
 
-    # Per-user SHAP waterfall
+    # ── Per-user SHAP Waterfall ───────────────────────────────────
     with st.expander("🧩 Why this prediction? (Per-user SHAP)"):
-        idx = raw_df.index[raw_df["customerID"] == user_id][0]
-        user_shap = shap_values[idx]
-        fig, ax = plt.subplots(figsize=(8, 4))
-        shap.plots.waterfall(user_shap, max_display=10, show=False)
-        st.pyplot(fig)
+        try:
+            idx = raw_df.index[raw_df["customerID"] == user_id][0]
+            user_shap = shap_values[idx]
+            fig, ax = plt.subplots(figsize=(8, 4))
+            shap.plots.waterfall(user_shap, max_display=10, show=False)
+            st.pyplot(fig)
+        except Exception as e:
+            st.error(f"Failed to render SHAP plot: {e}")
 
     summary = (
         f"User ID: {user_id}\n"
@@ -161,6 +176,9 @@ with tab1:
             f"variant={variant}, pred={pred}, prob={proba:.3f}\n"
         )
 
+# ---------------------------
+# TAB 2: Analytics Dashboard
+# ---------------------------
 with tab2:
     st.subheader("📈 System-wide Metrics")
     st.markdown("**Contracts**")
@@ -185,8 +203,13 @@ with tab2:
     )
     st.bar_chart(churn_rates, use_container_width=True)
 
+# ---------------------------
+# TAB 3: SHAP Explainability
+# ---------------------------
 with tab3:
     st.subheader("🧠 SHAP Summary Plot – Global Feature Impact")
     fig, ax = plt.subplots()
-    shap.summary_plot(shap_values, features=X_full, feature_names=churn_features, show=False)
+    shap.summary_plot(
+        shap_values, features=X_full_scaled, feature_names=churn_features, show=False
+    )
     st.pyplot(fig)
