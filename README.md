@@ -20,11 +20,12 @@ Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this p
 - ✅ Per-user churn probability with risk level  
 - ✅ A/B variant assignment stored in `data/churn.csv`  
 - ✅ SHAP global explainability visualization  
+- ✅ **Per-user SHAP waterfall plots** in the “Why this prediction?” expander  
 - ✅ One-click user summary export (TXT)  
 - ✅ Logs lifecycle activity to `logs/usage.log`  
 - ✅ Dashboard with contract, delay, engagement & variant charts  
 - ✅ Clean Streamlit UI with tabs and sidebar branding  
-- ✅ Fully Dockerized + CI/CD to AKS
+- ✅ Fully Dockerized + CI/CD to AKS  
 
 ---
 
@@ -111,6 +112,7 @@ Select user → load user data (including A/B variant)
   ↳ Predict churn (XGBoost + scaler + encoders)
   ↳ Generate nudge (rule-based)
   ↳ Display churn % & risk level
+  ↳ Show per-user SHAP waterfall to explain that prediction
   ↳ Export summary & log to logs/usage.log
 ```
 ---
