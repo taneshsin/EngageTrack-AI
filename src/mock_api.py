@@ -1,94 +1,57 @@
 import random
 
-# Persona tone mapping (customizable)
-PERSONA_TONE = {
-    "Senior": "formal",
-    "Young Professional": "friendly",
-    "Techie": "helpful",
-    "Default": "neutral"
-}
-
-# Tone-based sentence templates
-TONE_WRAPPER = {
-    "formal": lambda msg: f"We recommend: {msg}",
-    "friendly": lambda msg: f"Hey there! {msg}",
-    "helpful": lambda msg: f"Quick tip: {msg}",
-    "neutral": lambda msg: msg
-}
-
-
-def generate_mock_nudges(user_id, usage_frequency, support_calls, payment_delay, contract_length, persona="Default"):
+def generate_mock_nudges(user_id, usage_frequency, support_calls, payment_delay, contract_length):
     """
-    Generates a list of categorized, tone-adjusted engagement nudges for a customer.
+    Generate multiple categorized nudges based on user behavior inputs.
+    Returns a string containing category-tagged nudges.
     """
+    categories = {
+        "engagement": [],
+        "support": [],
+        "billing": [],
+        "retention": []
+    }
 
-    nudges = []
+    # Engagement nudges
+    if usage_frequency < 20:
+        categories["engagement"].extend([
+            "Try setting daily reminders to engage more consistently.",
+            "Explore our guided tutorials to get the most out of your subscription.",
+            "Low activity detected – try visiting new sections to discover features."
+        ])
 
-    # Normalize contract length
-    contract_length = contract_length.strip().lower() if isinstance(contract_length, str) else ""
+    # Support nudges
+    if support_calls > 3:
+        categories["support"].extend([
+            "Frequent help requests? Our FAQ might save you time!",
+            "Schedule a walkthrough call to reduce friction in usage.",
+            "Try our AI chatbot for faster issue resolution."
+        ])
 
-    # Set tone style
-    tone = PERSONA_TONE.get(persona, PERSONA_TONE["Default"])
-    wrap = TONE_WRAPPER.get(tone, TONE_WRAPPER["neutral"])
+    # Billing nudges
+    if payment_delay > 15:
+        categories["billing"].extend([
+            "Enable auto-pay to avoid service interruptions.",
+            "Consider switching to a more predictable payment method.",
+            "Your billing info might be outdated — take a moment to check."
+        ])
 
-    # Engagement-based nudges
-    try:
-        if float(usage_frequency) < 10:
-            nudges.append({
-                "category": "engagement",
-                "message": wrap("Explore our weekly tools to build a habit.")
-            })
-            nudges.append({
-                "category": "engagement",
-                "message": wrap("Set reminders to revisit your favorite features.")
-            })
-    except:
-        pass
+    # Retention nudges based on contract length
+    if contract_length.strip().lower() == "month-to-month":
+        categories["retention"].extend([
+            "Save up to 20% by switching to a 12-month contract.",
+            "Annual plans unlock premium support tiers.",
+            "Loyalty bonuses apply for 6-month+ commitments."
+        ])
 
-    # Support-related nudges
-    try:
-        if float(support_calls) > 5:
-            nudges.append({
-                "category": "support",
-                "message": wrap("You’ve reached out a few times — try our Help Center anytime.")
-            })
-            nudges.append({
-                "category": "support",
-                "message": wrap("Book a quick success call to improve your experience.")
-            })
-    except:
-        pass
+    # Fallback if no rules triggered
+    if all(len(lst) == 0 for lst in categories.values()):
+        categories["engagement"].append("You're all set! Explore new features released this month.")
 
-    # Payment delay nudges
-    try:
-        if float(payment_delay) > 15:
-            nudges.append({
-                "category": "payment",
-                "message": wrap("Enable auto-pay to avoid billing issues.")
-            })
-            nudges.append({
-                "category": "payment",
-                "message": wrap("Check our billing FAQ if you’re running into problems.")
-            })
-    except:
-        pass
+    # Sample one from each category (if available)
+    final_nudges = []
+    for cat, nudges in categories.items():
+        if nudges:
+            final_nudges.append(f"[{cat.upper()}] {random.choice(nudges)}")
 
-    # Contract upgrade suggestion
-    if contract_length == "month-to-month" or contract_length == "monthly":
-        nudges.append({
-            "category": "contract",
-            "message": wrap("Upgrade to annual billing and enjoy up to 20% savings.")
-        })
-        nudges.append({
-            "category": "contract",
-            "message": wrap("Annual plans come with premium support benefits.")
-        })
-
-    # Fallback generic
-    if not nudges:
-        nudges.append({
-            "category": "generic",
-            "message": wrap("Thanks for being with us! Check out our latest features today.")
-        })
-
-    return nudges
+    return "\n".join(final_nudges)
