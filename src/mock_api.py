@@ -1,57 +1,30 @@
 import random
 
-def generate_mock_nudges(user_id, usage_frequency, support_calls, payment_delay, contract_length):
-    """
-    Generate multiple categorized nudges based on user behavior inputs.
-    Returns a string containing category-tagged nudges.
-    """
-    categories = {
-        "engagement": [],
-        "support": [],
-        "billing": [],
-        "retention": []
-    }
+def generate_mock_nudges(user_id, usage_frequency, support_calls, payment_delay, contract_length=None, tech_support=None, monthly_charges=None, paperless_billing=None):
+    nudges = []
 
-    # Engagement nudges
-    if usage_frequency < 20:
-        categories["engagement"].extend([
-            "Try setting daily reminders to engage more consistently.",
-            "Explore our guided tutorials to get the most out of your subscription.",
-            "Low activity detected – try visiting new sections to discover features."
-        ])
+    if usage_frequency < 10:
+        nudges.append("Explore our quick-start tips to boost your engagement.")
 
-    # Support nudges
     if support_calls > 3:
-        categories["support"].extend([
-            "Frequent help requests? Our FAQ might save you time!",
-            "Schedule a walkthrough call to reduce friction in usage.",
-            "Try our AI chatbot for faster issue resolution."
-        ])
+        nudges.append("Try our Help Center to resolve common issues quickly.")
 
-    # Billing nudges
     if payment_delay > 15:
-        categories["billing"].extend([
-            "Enable auto-pay to avoid service interruptions.",
-            "Consider switching to a more predictable payment method.",
-            "Your billing info might be outdated — take a moment to check."
-        ])
+        nudges.append("Enable auto-pay to prevent billing interruptions.")
 
-    # Retention nudges based on contract length
-    if contract_length.strip().lower() == "month-to-month":
-        categories["retention"].extend([
-            "Save up to 20% by switching to a 12-month contract.",
-            "Annual plans unlock premium support tiers.",
-            "Loyalty bonuses apply for 6-month+ commitments."
-        ])
+    if contract_length and contract_length.lower() == "month-to-month":
+        nudges.append("Switch to a yearly plan and save on your monthly bill.")
 
-    # Fallback if no rules triggered
-    if all(len(lst) == 0 for lst in categories.values()):
-        categories["engagement"].append("You're all set! Explore new features released this month.")
+    if monthly_charges and monthly_charges > 80:
+        nudges.append("Review your active services — you might be paying for extras.")
 
-    # Sample one from each category (if available)
-    final_nudges = []
-    for cat, nudges in categories.items():
-        if nudges:
-            final_nudges.append(f"[{cat.upper()}] {random.choice(nudges)}")
+    if tech_support and tech_support.lower() == "no":
+        nudges.append("Enable tech support for hassle-free troubleshooting.")
 
-    return "\n".join(final_nudges)
+    if paperless_billing and paperless_billing.lower() == "no":
+        nudges.append("Switch to paperless billing for convenience and speed.")
+
+    if not nudges:
+        nudges.append("Thanks for being with us! Check out new features this month.")
+
+    return f"Hi {user_id}, {random.choice(nudges)}"
