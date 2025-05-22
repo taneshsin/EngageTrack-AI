@@ -40,8 +40,9 @@
 | 📊 Interactive Metrics Dashboard| Charts on contract type, tenure, monthly/total charges, churn, and A/B `variant` split      |
 | 🧪 A/B Variant Assignment       | Users assigned via the `variant` column in the dataset — roughly 50% A, 50% B                |
 | 🔍 Per-User Lifecycle Panel     | Detail view of user metadata, nudge message, churn probability, and risk level               |
+| 🧩 Per-User SHAP Explainability | Waterfall plots in User Insights showing top feature contributions per user                 |
 | 📥 Summary Download             | One-click export of per-user profile and churn analytics                                     |
-| 📝 Secure Logging               | Lifecycle events logged to `logs/usage.log` (directory tracked via `.gitkeep`, log ignored)  |
+| 📝 Secure Logging               | Lifecycle events logged to `logs/usage.log` (directory tracked via `.gitkeep`, log ignored) |
 
 ---
 
@@ -54,7 +55,7 @@
 | Churn Model AUC > 0.80     | ✅ Achieved (0.83) |
 | Summary Export Works       | ✅ Generates .txt  |
 | Variant A/B Split          | ✅ ~50/50          |
-| SHAP Explainability Tab    | ✅ Visual enabled  |
+| SHAP Explainability        | ✅ Global & per-user enabled  |
 
 ---
 
@@ -66,7 +67,6 @@
 | 💬 GPT-Powered Nudging Engine              | High     | Replace rule-based with OpenAI API   |
 | 📊 Cohort Analytics (Retention, Conversion)| Medium   | Useful for PM dashboards             |
 | 📈 Enhanced Trend Line Charts              | Medium   | Time-based engagement + churn trends |
-| 📊 SHAP Per-User Explanation               | High     | Drilldown-level explainability       |
 | 🔁 Feedback Integration Loop               | Low      | Close the loop for nudge effectiveness|
 
 ---
@@ -77,7 +77,7 @@
 - **Rows**: ~7,000 customer records  
 - **Target**: `Churn` (0 = Stay, 1 = Churn)  
 - **Features Used**: Gender, Contract, Subscription Type, Payment Delay, Usage, Tenure, Total Charges (log-scaled), Support Calls, **A/B variant**  
-- **Preprocessing**: Label encoding, scaling, log transform on skewed features, drop UI-only columns (`customerID`, `variant` handled separately)  
+- **Preprocessing**: Label encoding, scaling, log transform on skewed features, drop UI-only columns (`customerID`)
 
 ---
 
