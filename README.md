@@ -68,7 +68,7 @@ EngageTrack-AI/
 │ ├── app.py  
 │ ├── data_loader.py  
 │ ├── mock_api.py  
-│ ├── recommendation_engine.py  
+│ └── recommendation_engine.py
 ├── docs/
 │   ├── PRD.md
 │   ├── Features.md
