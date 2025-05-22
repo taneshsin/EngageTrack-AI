@@ -92,7 +92,7 @@ with tab1:
 
     st.subheader("💡 AI-Generated Nudge")
     if st.button("🔄 Generate New Nudge"):
-        st.session_state["mock_nudge"] = generate_mock_nudge(
+        st.session_state["mock_nudge"] = generate_mock_nudges(
             user_id="there",
             usage_frequency=user_data["Usage Frequency"],
             support_calls=user_data["Support Calls"],
@@ -100,7 +100,7 @@ with tab1:
             contract_length=user_data["Contract Length"]
         )
     if "mock_nudge" not in st.session_state:
-        st.session_state["mock_nudge"] = generate_mock_nudge(
+        st.session_state["mock_nudge"] = generate_mock_nudges(
             user_id="there",
             usage_frequency=user_data["Usage Frequency"],
             support_calls=user_data["Support Calls"],
