@@ -1,8 +1,10 @@
 # 📊 EngageTrack AI – Smart Productivity Insights
 
-**EngageTrack AI** is a simulated SaaS product analytics platform that visualizes user lifecycle insights, churn risk, engagement levels, and delivers AI-powered nudges. It mimics how modern AI-enabled SaaS platforms use behavioral signals and personalization to drive engagement.
+**EngageTrack AI** is a simulated SaaS analytics platform designed to showcase lifecycle intelligence, churn prediction, A/B testing, and AI-powered nudges using a real customer behavior dataset.
 
-Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this project showcases **product strategy, DevOps maturity, and full-stack delivery**.
+This project demonstrates how modern SaaS platforms can personalize engagement, track churn risk, and simulate product experimentation — all deployed via Docker + GitHub Actions + Azure AKS.
+
+---
 
 ---
 
@@ -15,31 +17,29 @@ Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this p
 
 ## 🚀 Features
 
-
-- ✅ Real churn prediction using XGBoost classifier
-- ✅ AI-generated feature nudges via mock logic
-- ✅ Per-user churn probability score with insights
-- ✅ A/B variant assignment (`churn.csv`) for simulation
-- ✅ Model input preview for every user
-- ✅ Summary export as `.txt`
-- ✅ Logging audit trail (`/tmp/usage.log`)
-- ✅ Dashboard charts: engagement, contract, churn, variants
-- ✅ Modular Streamlit UI with sidebar branding
-- ✅ Deployed via Docker + GitHub Actions → Azure AKS
-- ✅ Notebook with SHAP-based explainability
+- ✅ Real churn prediction using XGBoost (Telco dataset)
+- ✅ AI-generated nudges via rule-based mock API
+- ✅ Per-user churn probability with risk level
+- ✅ A/B variant assignment stored in `churn.csv`
+- ✅ SHAP explainability visualization (global summary)
+- ✅ One-click user summary export (TXT)
+- ✅ Logs lifecycle activity to `/tmp/usage.log`
+- ✅ Dashboard with contract, delay, engagement, variants
+- ✅ Clean Streamlit UI with tabs and sidebar branding
+- ✅ Fully Dockerized + CI/CD to AKS
 ---
 
 ## 📦 Tech Stack
 
-| Layer         | Tech                                      |
+| Layer         | Tech Used                                 |
 |---------------|--------------------------------------------|
 | UI / Frontend | Streamlit                                 |
-| Backend       | Python, Pandas                            |
-| ML Model      | XGBoost (churn classifier)                |
-| Preprocessing | LabelEncoder, StandardScaler              |
+| ML Model      | XGBoost (binary churn classifier)         |
+| Preprocessing | Pandas, LabelEncoder, StandardScaler      |
+| Backend       | Modular Python (`src/` architecture)      |
 | DevOps        | Docker, GitHub Actions, Azure AKS         |
-| Infra         | NGINX reverse proxy, LoadBalancer ingress |
-| Data Source   | `churn.csv` (simulated SaaS behavior)     |
+| Infra         | NGINX ingress, AKS LoadBalancer           |
+| Dataset       | Telco Customer Churn (IBM Sample)         |
 
 ---
 
@@ -59,7 +59,7 @@ Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this p
 
 ```bash
 EngageTrack-AI/
-├── src/ # App logic  
+├── src/ # Streamlit App & Modules
 │ ├── app.py  
 │ ├── data_loader.py  
 │ ├── mock_api.py  
@@ -68,17 +68,21 @@ EngageTrack-AI/
 ├── logs/ # Logs are redirected to /tmp in cloud  
 │  
 ├── data/ # Input data  
-│ └── churn.csv  
+│ └── churn.csv       # Updated Telco dataset with variant column
 │  
 ├── notebooks/
 │ └── churn_model.ipynb
-│  
+│
+├── logs/                 # Runtime logs (redirected to /tmp in prod)
+|
 ├── docs/ # Documentation  
-│ └── PRD.md, Features.md, etc.  
+│   ├── PRD.md
+│   ├── Features.md
+│   ├── Help_Center.md
+│   └── Release_Notes.md
 │  
 ├── Dockerfile  
 ├── requirements.txt  
-├── assign_variants.py  
 ├── Security.md  
 ├── docker-compose.yml  
 ├── engagetrack-deploy.yaml  
@@ -111,26 +115,27 @@ docker run -p 8501:8501 engagetrack
 
 ## 🧠 System Logic
 ```bash
-User selects ID → Loads behavior & metadata
-   ↳ Churn model (XGBoost) predicts risk
-   ↳ AI nudge generated via mock_api
-   ↳ Metadata + prediction shown in UI
-   ↳ Optional export as summary .txt
-   ↳ Dashboard shows aggregated insights
+Select user ID →
+    ↳ Load metadata (contract, delay, calls, etc.)
+    ↳ Predict churn via XGBoost (trained model)
+    ↳ Display churn probability and risk level
+    ↳ Generate nudge via rule-based logic
+    ↳ Allow user summary download
+    ↳ Log interaction to /tmp/usage.log
 ```
-
-✅ If variant is missing in dataset, manually add it using assign_variants.py  
-✅ Payment Delay is log-transformed for ML stability
-
+✅ Payment Delay is log-transformed  
+✅ Categorical fields encoded with LabelEncoder  
+✅ SHAP values shown in Explainability tab  
+✅ Variant A/B logic handled if column exists
 ---
 
 ## 📊 Dashboard Insights
 
 🔥 **Usage Frequency Distribution**  
-🧮 **Contract Length Segmentation**  
+🧮 **Contract Type Distribution**  
 📞 **Support Call Frequency**  
 ⏳ **Payment Delay Breakdown**  
-🧪 **A/B Variant Split** (if column present)
+🧪 **A/B Variant Assignment**
 
 ---
 
@@ -165,11 +170,21 @@ See Security.md for full details.
 
 A Jupyter notebook with:  
 
-- Model training
-- ROC + confusion matrix
-- SHAP explainability plot  
+- ✅ Churn model training (XGBoost)
+- ✅ ROC curve and confusion matrix
+- ✅ SHAP global explainability plot
 
 File: notebooks/churn_model.ipynb
+
+---
+
+## 📄 Docs & Support Files
+
+PRD.md – Product Requirements Document
+
+- Features.md – Detailed feature overview  
+- Help_Center.md – UI usage instructions  
+- Security.md – Security best practices
 
 ---
 
