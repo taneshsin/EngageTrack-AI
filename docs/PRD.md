@@ -83,7 +83,7 @@
 
 ## 📌 Project Info
 
-- **Live Demo**: [http://your-app-url.com](http://your-app-url.com)  
+- **Live Demo**: [http://your-app-url.com](http://172.171.188.153/)  
 - **GitHub Repo**: [github.com/taneshsin/EngageTrack-AI](https://github.com/taneshsin/EngageTrack-AI)  
 - **Maintainer**: Tanesh Singhal (MS-BANA 2025)  
 - **Tools**: Streamlit, Python, XGBoost, Docker, GitHub Actions, Azure AKS  
