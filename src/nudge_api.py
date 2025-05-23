@@ -1,15 +1,17 @@
+# src/nudge_api.py
+
 import os
 import requests
 from dotenv import load_dotenv
 
-# Load TG_API_KEY from .env locally, or from environment (CI/CD, AKS)
+# Load TG_API_KEY from .env locally or from environment
 load_dotenv()
 TG_API_KEY = os.getenv("TG_API_KEY")
 
-# Together AI text-generation endpoint (v1 completion)
-TG_URL = "https://api.together.ai/api/v1/completions"
+# Together AI completion endpoint
+TG_URL = "https://api.together.xyz/v1/completions"
 
-def generate_together_nudge(
+def generate_hf_nudge(
     user_id,
     usage_frequency,
     support_calls,
@@ -21,7 +23,8 @@ def generate_together_nudge(
     variant
 ):
     """
-    Generate a friendly engagement nudge via Together AI.
+    Generate a personalized engagement nudge via Together AI.
+    (Function name unchanged for compatibility with app.py.)
     """
     prompt = (
         f"User {user_id} profile:\n"
@@ -44,13 +47,16 @@ def generate_together_nudge(
         "model": "together-vicuna-7b",
         "prompt": prompt,
         "max_tokens": 100,
-        "temperature": 0.7,
+        "temperature": 0.7
     }
 
-    resp = requests.post(TG_URL, headers=headers, json=payload, timeout=30)
-    resp.raise_for_status()
-    data = resp.json()
+    response = requests.post(TG_URL, headers=headers, json=payload, timeout=30)
+    response.raise_for_status()
+    data = response.json()
 
-    # Response format: { "id": "...", "choices": [ { "text": "..." } ], ... }
-    text = data.get("choices", [{}])[0].get("text", "").strip()
-    return text or "Unable to generate suggestion."
+    # Together AI returns {"choices":[{"text":"..."}], ...}
+    choices = data.get("choices", [])
+    if choices and "text" in choices[0]:
+        return choices[0]["text"].strip()
+
+    return "Unable to generate suggestion."
