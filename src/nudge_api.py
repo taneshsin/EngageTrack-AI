@@ -4,10 +4,11 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# Load HF_TOKEN from .env locally or from environment (CI/CD, AKS)
-load_dotenv()
+load_dotenv()  
 HF_TOKEN = os.getenv("HF_TOKEN")
-INFERENCE_API_URL = "https://api-inference.huggingface.co/models/gpt2"
+
+# Use the pipeline endpoint for text-generation
+INFERENCE_API_URL = "https://api-inference.huggingface.co/pipeline/text-generation/gpt2"
 
 def generate_hf_nudge(
     user_id,
@@ -20,10 +21,6 @@ def generate_hf_nudge(
     paperless_billing,
     variant
 ):
-    """
-    Generate a personalized engagement nudge by calling
-    the Hugging Face Inference API over HTTP.
-    """
     prompt = (
         f"User {user_id} profile:\n"
         f"- Tenure (months): {usage_frequency}\n"
@@ -34,8 +31,7 @@ def generate_hf_nudge(
         f"- Monthly charges: ${monthly_charges}\n"
         f"- Paperless billing: {paperless_billing}\n"
         f"- Variant: {variant}\n\n"
-        "Write a concise, friendly suggestion to help this user "
-        "increase engagement and reduce churn."
+        "Write a concise, friendly suggestion to help this user increase engagement and reduce churn."
     )
 
     headers = {
@@ -50,12 +46,11 @@ def generate_hf_nudge(
         }
     }
 
-    response = requests.post(INFERENCE_API_URL, headers=headers, json=payload, timeout=30)
-    response.raise_for_status()
-    data = response.json()
+    resp = requests.post(INFERENCE_API_URL, headers=headers, json=payload, timeout=30)
+    resp.raise_for_status()
+    data = resp.json()
 
-    # The API returns a list of dicts with "generated_text"
-    if isinstance(data, list) and "generated_text" in data[0]:
-        return data[0]["generated_text"].strip()
-    # Otherwise return the whole payload
+    # The pipeline returns [[{"generated_text": "..."}]]
+    if isinstance(data, list) and data and isinstance(data[0], list) and data[0] and "generated_text" in data[0][0]:
+        return data[0][0]["generated_text"].strip()
     return str(data).strip()
