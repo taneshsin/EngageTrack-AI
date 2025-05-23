@@ -30,7 +30,7 @@ jobs:
 
     - name: 🚀 (Optional) Check Streamlit starts without crash
       run: |
-        streamlit run src/main.py --server.headless true &
+        streamlit run src/app.py --server.headless true &
         sleep 10
         pkill streamlit
 
