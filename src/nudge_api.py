@@ -4,9 +4,9 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# Load TG_API_KEY from .env locally or from environment
+# Load HF_TOKEN from .env locally or from environment (CI/CD, AKS)
 load_dotenv()
-TG_API_KEY = os.getenv("TG_API_KEY")
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 # Together AI completion endpoint
 TG_URL = "https://api.together.xyz/v1/completions"
@@ -23,8 +23,8 @@ def generate_hf_nudge(
     variant
 ):
     """
-    Generate a personalized engagement nudge via Together AI.
-    (Function name unchanged for compatibility with app.py.)
+    Generate a personalized engagement nudge via Together AI,
+    using the HF_TOKEN env var for authentication.
     """
     prompt = (
         f"User {user_id} profile:\n"
@@ -40,7 +40,7 @@ def generate_hf_nudge(
     )
 
     headers = {
-        "Authorization": f"Bearer {TG_API_KEY}",
+        "Authorization": f"Bearer {HF_TOKEN}",
         "Content-Type": "application/json"
     }
     payload = {
@@ -56,7 +56,7 @@ def generate_hf_nudge(
 
     # Together AI returns {"choices":[{"text":"..."}], ...}
     choices = data.get("choices", [])
-    if choices and "text" in choices[0]:
+    if choices and isinstance(choices[0], dict) and "text" in choices[0]:
         return choices[0]["text"].strip()
 
     return "Unable to generate suggestion."
