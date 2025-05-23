@@ -25,7 +25,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 🔍 Smoke test: Run data loader
+      - name: 🔍 Smoke test_Run data loader
         run: python src/data_loader.py
 
       - name: 🚀 (Optional) Check Streamlit starts without crash
@@ -34,7 +34,7 @@ jobs:
           sleep 10
           pkill streamlit
 
-      - name: 🔍 Smoke test: HF nudge
+      - name: 🔍 Smoke test_HF nudge
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python test_nudge.py
