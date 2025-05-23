@@ -9,7 +9,7 @@ import shap
 import xgboost as xgb
 
 from data_loader import load_user_data, preprocess_user_data
-from mock_api import generate_mock_nudges
+from nudge_api import generate_hf_nudge
 from recommendation_engine import get_engagement_color, get_churn_color, get_churn_label
 
 # Setup logs directory
@@ -27,7 +27,7 @@ with st.sidebar:
     st.write("Built with Streamlit, XGBoost, Docker, and AKS")
 
 st.title("EngageTrack AI – User Lifecycle & Churn Insight Platform")
-st.caption("Simulated SaaS analytics tool with ML-based churn prediction and engagement nudging.")
+st.caption("Simulated SaaS analytics tool with ML-based churn prediction and AI-powered nudging.")
 st.markdown("---")
 
 # Load & normalize raw data
@@ -95,24 +95,26 @@ with tab1:
     st.caption(f"Raw variant value: {variant}")
 
     st.markdown("### AI-Generated Nudge")
-    if st.button("Generate New Nudge") or "mock_nudge" not in st.session_state:
-        msg, reasons = generate_mock_nudges(
-            user_id=user_id,
-            usage_frequency=user_row["tenure"],
-            support_calls=0,
-            payment_delay=int(float(user_row["TotalCharges"])),
-            contract_length=user_row["Contract"],
-            tech_support=user_row.get("TechSupport"),
-            monthly_charges=user_row.get("MonthlyCharges"),
-            paperless_billing=user_row.get("PaperlessBilling"),
-            variant=variant,
-            verbose=True,
-        )
-        st.session_state["mock_nudge"] = (msg, reasons)
+    if st.button("Generate New Nudge") or "nudge" not in st.session_state:
+        with st.spinner("Generating nudge…"):
+            try:
+                nudge_text = generate_hf_nudge(
+                    user_id=user_id,
+                    usage_frequency=user_row["tenure"],
+                    support_calls=0,
+                    payment_delay=int(float(user_row["TotalCharges"])),
+                    contract_length=user_row["Contract"],
+                    tech_support=user_row.get("TechSupport"),
+                    monthly_charges=user_row.get("MonthlyCharges"),
+                    paperless_billing=user_row.get("PaperlessBilling"),
+                    variant=variant
+                )
+            except Exception:
+                st.error("Failed to generate nudge; please try again later.")
+                nudge_text = "Unable to generate suggestion."
+        st.session_state["nudge"] = nudge_text
 
-    message, reasons = st.session_state["mock_nudge"]
-    st.info(message)
-    st.caption(f"Triggered by: {', '.join(reasons)}")
+    st.info(st.session_state.get("nudge", ""))
 
     st.markdown(f"**Contract:** {user_row['Contract']}")
     st.markdown(
@@ -159,8 +161,8 @@ with tab1:
     summary = (
         f"User ID: {user_id}\n"
         f"Variant: {variant}\n"
-        f"Prediction: {'Churn' if pred==1 else 'Retain'}\n"
-        f"Probability: {proba*100:.2f}%\n"
+        f"Prediction: {'Churn' if pred == 1 else 'Retain'}\n"
+        f"Probability: {proba * 100:.2f}%\n"
         f"Risk Level: {label}\n"
     )
     st.download_button("Export Summary", summary, file_name=f"summary_{user_id}.txt")
