@@ -12,31 +12,29 @@ jobs:
     name: 🧪 Run Python CI checks
 
     steps:
-    - name: 📥 Checkout code
-      uses: actions/checkout@v3
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
 
-    - name: 🐍 Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: 📦 Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: 🔍 Smoke test: Run data loader
-      run: python src/data_loader.py
+      - name: 🔍 Smoke test: Run data loader
+        run: python src/data_loader.py
 
-    - name: 🚀 (Optional) Check Streamlit starts without crash
-      run: |
-        streamlit run src/app.py --server.headless true &
-        sleep 10
-        pkill streamlit
+      - name: 🚀 (Optional) Check Streamlit starts without crash
+        run: |
+          streamlit run src/app.py --server.headless true &
+          sleep 10
+          pkill streamlit
 
-    - name: 🔍 Smoke test: HF nudge
-      env:
-        HF_TOKEN: ${{ secrets.HF_TOKEN }}
-      run: |
-        python test_nudge.py
-
+      - name: 🔍 Smoke test: HF nudge
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python test_nudge.py
