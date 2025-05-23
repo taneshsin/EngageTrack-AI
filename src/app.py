@@ -12,12 +12,12 @@ from data_loader import load_user_data, preprocess_user_data
 from nudge_api import generate_hf_nudge
 from recommendation_engine import get_engagement_color, get_churn_color, get_churn_label
 
-# Setup logs directory
+# ── Setup logs directory ───────────────────────────────────────────
 LOG_DIR = "logs"
 LOG_FILE = os.path.join(LOG_DIR, "usage.log")
 os.makedirs(LOG_DIR, exist_ok=True)
 
-# Streamlit page config
+# ── Streamlit page config ────────────────────────────────────────
 st.set_page_config(page_title="EngageTrack AI", layout="centered")
 
 with st.sidebar:
@@ -30,7 +30,7 @@ st.title("EngageTrack AI – User Lifecycle & Churn Insight Platform")
 st.caption("Simulated SaaS analytics tool with ML-based churn prediction and AI-powered nudging.")
 st.markdown("---")
 
-# Load & normalize raw data
+# ── Load & normalize raw data ─────────────────────────────────────
 raw_df = load_user_data(raw=True)
 raw_df["customerID"] = raw_df["customerID"].astype(str)
 raw_df["variant"] = (
@@ -41,11 +41,13 @@ raw_df["variant"] = (
     .replace({"0": "A", "1": "B"})
 )
 
-# Train model & precompute SHAP
+# ── Train model & precompute SHAP ─────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def train_and_prepare():
     df_full = load_user_data(raw=True)
-    X, y, scaler, encoders, features = preprocess_user_data(df_full, fit=True, return_scaler=True)
+    X, y, scaler, encoders, features = preprocess_user_data(
+        df_full, fit=True, return_scaler=True
+    )
 
     model = xgb.XGBClassifier(
         use_label_encoder=False,
@@ -74,10 +76,10 @@ def train_and_prepare():
     churn_features,
     explainer,
     shap_values,
-    X_full_scaled
+    X_full_scaled,
 ) = train_and_prepare()
 
-# Layout tabs
+# ── Layout tabs ───────────────────────────────────────────────────
 tab1, tab2, tab3 = st.tabs(["User Insights", "Analytics Dashboard", "Explainability"])
 
 # ---------------------------
@@ -107,10 +109,10 @@ with tab1:
                     tech_support=user_row.get("TechSupport"),
                     monthly_charges=user_row.get("MonthlyCharges"),
                     paperless_billing=user_row.get("PaperlessBilling"),
-                    variant=variant
+                    variant=variant,
                 )
-            except Exception:
-                st.error("Failed to generate nudge; please try again later.")
+            except Exception as e:
+                st.error(f"Error generating nudge: {e}")
                 nudge_text = "Unable to generate suggestion."
         st.session_state["nudge"] = nudge_text
 
@@ -146,7 +148,10 @@ with tab1:
         st.success("Model predicts user will stay.")
 
     st.markdown(f"**Probability:** {proba * 100:.2f}%")
-    st.markdown(f"**Risk Level:** <span style='color:{color}'>{label}</span>", unsafe_allow_html=True)
+    st.markdown(
+        f"**Risk Level:** <span style='color:{color}'>{label}</span>",
+        unsafe_allow_html=True,
+    )
 
     with st.expander("Why this prediction? (Per-user SHAP)"):
         try:
