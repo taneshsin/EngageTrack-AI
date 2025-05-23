@@ -1,8 +1,8 @@
 # 📊 EngageTrack AI – Smart Productivity Insights
 
-**EngageTrack AI** is a simulated SaaS analytics platform that visualizes user lifecycle insights, churn risk, engagement levels, and delivers AI-powered nudges. It mimics how modern AI-enabled SaaS products use behavioral signals and personalization to drive engagement.
+**EngageTrack AI** is a simulated SaaS analytics platform that visualizes user lifecycle insights, churn risk, engagement levels, and delivers real LLM–powered nudges. It mimics how modern AI-enabled SaaS products use behavioral signals and personalization to drive retention.
 
-Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this project showcases **product strategy, DevOps maturity, and full-stack delivery**.
+Built with **Streamlit + XGBoost + Together AI + Docker + GitHub Actions + Azure AKS**, this project showcases **product strategy, full-stack ML, explainability, and DevOps maturity**.
 
 ---
 
@@ -15,32 +15,34 @@ Built with **Streamlit + XGBoost + Docker + GitHub Actions + Azure AKS**, this p
 
 ## 🚀 Features
 
-- ✅ Real churn prediction using XGBoost (Telco dataset)  
-- ✅ AI-generated nudges via rule-based mock API  
+- ✅ Real churn prediction using **XGBoost** (Telco dataset)  
+- ✅ **AI-generated nudges** via Together AI Mixtral-8x7B model (`src/nudge_api.py`)  
 - ✅ Per-user churn probability with risk level  
-- ✅ A/B variant assignment stored in `data/churn.csv`  
+- ✅ A/B variant assignment in `data/churn.csv`  
+- ✅ **Per-user SHAP waterfall plots** under “Why this prediction?”  
 - ✅ SHAP global explainability visualization  
-- ✅ **Per-user SHAP waterfall plots** in the “Why this prediction?” expander  
 - ✅ One-click user summary export (TXT)  
-- ✅ Logs lifecycle activity to `logs/usage.log`  
-- ✅ Dashboard with contract, delay, engagement & variant charts  
-- ✅ Clean Streamlit UI with tabs and sidebar branding  
-- ✅ Fully Dockerized + CI/CD to AKS  
+- ✅ Secure logging to `logs/usage.log` (tracked via `.gitkeep`)  
+- ✅ Dashboard charts for contract, tenure, charges, support calls, variant, churn rate  
+- ✅ Clean Streamlit UI with tabs and sidebar  
+- ✅ Fully Dockerized + CI/CD → AKS  
 
 ---
 
 ## 📦 Tech Stack
 
-| Layer         | Tech Used                                   |
-|---------------|----------------------------------------------|
-| UI / Frontend | Streamlit                                   |
-| ML Model      | XGBoost (binary churn classifier)           |
-| Preprocessing | Pandas, LabelEncoder, StandardScaler        |
-| Backend       | Modular Python (`app.py`, `data_loader.py`) |
-| DevOps        | Docker, GitHub Actions, Azure AKS           |
-| Infra         | NGINX Ingress + AKS Load Balancer            |
-| Dataset       | IBM Telco Customer Churn (+ `variant` flag) |
-
+| Layer             | Tech Used                                                |
+|-------------------|----------------------------------------------------------|
+| Frontend / UI     | Streamlit                                                |
+| ML Model          | XGBoost                                                  |
+| LLM Nudges        | Together AI Mixtral-8x7B via REST (`requests`, `dotenv`) |
+| Explainability    | SHAP                                                      |
+| Backend           | Python modular (`src/app.py`, `src/data_loader.py`, `src/nudge_api.py`) |
+| Containerization  | Docker, Docker Compose                                   |
+| CI/CD             | GitHub Actions                                           |
+| Orchestration     | Azure Kubernetes Service (AKS)                           |
+| Ingress / Network | NGINX Ingress + Azure Load Balancer                      |
+| Dataset           | IBM Telco Customer Churn + `variant` column              |
 ---
 
 ## 🖼 Screenshots
@@ -68,7 +70,7 @@ EngageTrack-AI/
 ├── src/ # Streamlit App & Modules
 │ ├── app.py  
 │ ├── data_loader.py  
-│ ├── mock_api.py  
+│ ├── nudge_api.py  
 │ └── recommendation_engine.py
 ├── docs/
 │   ├── PRD.md
@@ -107,13 +109,12 @@ docker run -p 8501:8501 engagetrack-ai
 
 ## 🧠 System Logic
 ```bash
-Select user → load user data (including A/B variant)
-  ↳ Preprocess (label-encode, log-transform)
-  ↳ Predict churn (XGBoost + scaler + encoders)
-  ↳ Generate nudge (rule-based)
-  ↳ Display churn % & risk level
-  ↳ Show per-user SHAP waterfall to explain that prediction
-  ↳ Export summary & log to logs/usage.log
+Select user → load profile (including A/B variant)
+  ↳ Preprocess features (encode, scale, log-transform)
+  ↳ Predict churn (XGBoost + SHAP)
+  ↳ Generate nudge (Together AI)
+  ↳ Display churn probability & per-user SHAP waterfall
+  ↳ Export summary and append log
 ```
 ---
 
