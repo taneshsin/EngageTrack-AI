@@ -37,7 +37,7 @@ def generate_hf_nudge(
         f"- Monthly charges: ${monthly_charges}\n"
         f"- Paperless billing: {paperless_billing}\n"
         f"- Variant: {variant}\n\n"
-        "Write a concise, friendly suggestion to help this user increase engagement and reduce churn."
+        "Write a brief, friendly message (1-2 sentences) to help this user engage more and avoid churn."
     )
 
     headers = {
@@ -48,7 +48,7 @@ def generate_hf_nudge(
     payload = {
         "model": MODEL_NAME,
         "prompt": prompt,
-        "max_tokens": 100,
+        "max_tokens": 50,
         "temperature": 0.7
     }
 
