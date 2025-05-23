@@ -1,16 +1,17 @@
-# src/nudge_api.py
-
 import os
 import requests
 from dotenv import load_dotenv
 
-# Load your Together AI key (still via HF_TOKEN env var)
+# Load environment variables from .env file
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# Together AI free Llama Vision + FLUX.1 completion endpoint
+# Validate environment variable
+if not HF_TOKEN:
+    raise EnvironmentError("HF_TOKEN is not set. Please check your .env file.")
+
 TG_URL = "https://api.together.xyz/v1/completions"
-MODEL_NAME = "together-llama-11b-flux.1"  # the free-tier model
+MODEL_NAME = "mistralai/Mixtral-8x7B-Instruct-v0.1"  # Update this if needed
 
 def generate_hf_nudge(
     user_id,
@@ -24,7 +25,7 @@ def generate_hf_nudge(
     variant
 ):
     """
-    Generate a personalized engagement nudge via Together AI’s free Llama Vision 11B + FLUX.1 model.
+    Generate a personalized engagement nudge using Together AI text generation model.
     """
     prompt = (
         f"User {user_id} profile:\n"
@@ -43,6 +44,7 @@ def generate_hf_nudge(
         "Authorization": f"Bearer {HF_TOKEN}",
         "Content-Type": "application/json"
     }
+
     payload = {
         "model": MODEL_NAME,
         "prompt": prompt,
@@ -55,7 +57,6 @@ def generate_hf_nudge(
         raise RuntimeError(f"Together API error {resp.status_code}: {resp.text}")
 
     data = resp.json()
-    # Expect {"choices":[{"text":"..."}], ...}
     choices = data.get("choices", [])
     if choices and isinstance(choices[0], dict) and "text" in choices[0]:
         return choices[0]["text"].strip()
