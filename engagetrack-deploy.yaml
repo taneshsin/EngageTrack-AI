@@ -21,6 +21,12 @@ spec:
       - name: engagetrack
         image: engagetrackacr.azurecr.io/engagetrack:latest
         imagePullPolicy: Always
+        env:
+          - name: HF_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hf-token
+                key: HF_TOKEN
         ports:
         - containerPort: 8501
         resources:
