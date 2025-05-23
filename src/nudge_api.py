@@ -4,12 +4,12 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# Load HF_TOKEN from .env locally or from environment (CI/CD, AKS)
+# Load your Together AI key (still in HF_TOKEN for compatibility)
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# Together AI completion endpoint
-TG_URL = "https://api.together.ai/api/v1/completions"
+# Use the Together AI completions endpoint you’ve verified
+TG_URL = "https://api.together.xyz/v1/completions"
 
 def generate_hf_nudge(
     user_id,
@@ -23,8 +23,8 @@ def generate_hf_nudge(
     variant
 ):
     """
-    Generate a personalized engagement nudge via Together AI,
-    using the HF_TOKEN env var for authentication.
+    Generate a personalized engagement nudge via Together AI's 
+    completions endpoint (api.together.xyz/v1/completions).
     """
     prompt = (
         f"User {user_id} profile:\n"
@@ -50,11 +50,13 @@ def generate_hf_nudge(
         "temperature": 0.7
     }
 
-    response = requests.post(TG_URL, headers=headers, json=payload, timeout=30)
-    response.raise_for_status()
-    data = response.json()
+    resp = requests.post(TG_URL, headers=headers, json=payload, timeout=30)
+    if resp.status_code != 200:
+        # Debug: show the body on 404 or other errors
+        raise RuntimeError(f"Together API error {resp.status_code}: {resp.text}")
 
-    # Together AI returns {"choices":[{"text":"..."}], ...}
+    data = resp.json()
+    # Expect: {"choices":[{"text":"..."}], ...}
     choices = data.get("choices", [])
     if choices and isinstance(choices[0], dict) and "text" in choices[0]:
         return choices[0]["text"].strip()
