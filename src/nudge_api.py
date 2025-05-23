@@ -4,11 +4,11 @@ import os
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()  
+load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# Use the pipeline endpoint for text-generation
-INFERENCE_API_URL = "https://api-inference.huggingface.co/pipeline/text-generation/gpt2"
+# Use the DistilGPT-2 pipeline (always enabled)
+INFERENCE_API_URL = "https://api-inference.huggingface.co/pipeline/text-generation/distilgpt2"
 
 def generate_hf_nudge(
     user_id,
@@ -36,7 +36,7 @@ def generate_hf_nudge(
 
     headers = {
         "Authorization": f"Bearer {HF_TOKEN}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
     payload = {
         "inputs": prompt,
@@ -50,7 +50,7 @@ def generate_hf_nudge(
     resp.raise_for_status()
     data = resp.json()
 
-    # The pipeline returns [[{"generated_text": "..."}]]
+    # Pipeline returns [[{"generated_text": "..."}]]
     if isinstance(data, list) and data and isinstance(data[0], list) and data[0] and "generated_text" in data[0][0]:
         return data[0][0]["generated_text"].strip()
     return str(data).strip()
