@@ -1,3 +1,4 @@
+# src/nudge_api.py
 import os
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
@@ -22,11 +23,15 @@ def generate_hf_nudge(user_id, usage_frequency, support_calls,
         f"- Variant: {variant}\n\n"
         "Write a concise, friendly suggestion to help this user increase engagement and reduce churn."
     )
+
+    # Note: use `prompt=` instead of `inputs=`
     result = client.text_generation(
         model="gpt2-medium",
-        inputs=prompt,
+        prompt=prompt,
         parameters={"max_new_tokens": 100, "temperature": 0.7}
     )
+
     if hasattr(result, "generated_text"):
         return result.generated_text.strip()
-    return result[0]["generated_text"].strip()
+    else:
+        return result[0].get("generated_text", "").strip()
