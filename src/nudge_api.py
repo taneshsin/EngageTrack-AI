@@ -37,7 +37,11 @@ def generate_hf_nudge(
         f"- Monthly charges: ${monthly_charges}\n"
         f"- Paperless billing: {paperless_billing}\n"
         f"- Variant: {variant}\n\n"
-        "Write a concise, friendly message (max 30 words) encouraging this user to stay engaged and reduce churn. Do not include any user IDs, phone numbers, links, or system details—just a direct, personal-sounding tip."
+        "Write a concise, friendly message (max 30 words) "
+        "to encourage continued engagement and reduce churn. "
+        "Do NOT include any user IDs, dates, phone numbers, links, "
+        "or system-specific details. "
+        "Speak directly as if talking to the user, using only “you” and general benefits."
     )
 
     headers = {
