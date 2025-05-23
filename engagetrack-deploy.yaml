@@ -20,6 +20,7 @@ spec:
       containers:
       - name: engagetrack
         image: engagetrackacr.azurecr.io/engagetrack:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8501
         resources:
