@@ -1,14 +1,17 @@
-# src/nudge_api.py
-
 import os
 import requests
-import re
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
+
+# Validate environment variable
+if not HF_TOKEN:
+    raise EnvironmentError("HF_TOKEN is not set. Please check your .env file.")
+
 TG_URL = "https://api.together.xyz/v1/completions"
-MODEL_NAME = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+MODEL_NAME = "mistralai/Mixtral-8x7B-Instruct-v0.1"  # Update this if needed
 
 def generate_hf_nudge(
     user_id,
@@ -21,18 +24,27 @@ def generate_hf_nudge(
     paperless_billing,
     variant
 ):
+    """
+    Generate a personalized engagement nudge using Together AI text generation model.
+    """
     prompt = (
-        "Write a concise, friendly message (no more than 30 words) "
-        "to encourage continued engagement and reduce churn. "
-        "Do NOT include any user IDs, dates, phone numbers, links, "
-        "or system-specific details. "
-        "Use only “you” and general benefits."
+        f"User {user_id} profile:\n"
+        f"- Tenure (months): {usage_frequency}\n"
+        f"- Support calls: {support_calls}\n"
+        f"- Payment delay (log days): {payment_delay}\n"
+        f"- Contract: {contract_length}\n"
+        f"- Tech support: {tech_support}\n"
+        f"- Monthly charges: ${monthly_charges}\n"
+        f"- Paperless billing: {paperless_billing}\n"
+        f"- Variant: {variant}\n\n"
+        "Write a concise, friendly suggestion to help this user increase engagement and reduce churn in max 30 words."
     )
 
     headers = {
         "Authorization": f"Bearer {HF_TOKEN}",
         "Content-Type": "application/json"
     }
+
     payload = {
         "model": MODEL_NAME,
         "prompt": prompt,
@@ -41,14 +53,12 @@ def generate_hf_nudge(
     }
 
     resp = requests.post(TG_URL, headers=headers, json=payload, timeout=30)
-    resp.raise_for_status()
-    data = resp.json()
+    if resp.status_code != 200:
+        raise RuntimeError(f"Together API error {resp.status_code}: {resp.text}")
 
+    data = resp.json()
     choices = data.get("choices", [])
-    if choices and "text" in choices[0]:
-        text = choices[0]["text"].strip()
-        # Strip any trailing "User X" noise
-        clean = re.sub(r"\s*User\s+\S+$", "", text).strip()
-        return clean
+    if choices and isinstance(choices[0], dict) and "text" in choices[0]:
+        return choices[0]["text"].strip()
 
     return "Unable to generate suggestion."
