@@ -1,15 +1,13 @@
 # src/nudge_api.py
 
 import os
+import requests
 from dotenv import load_dotenv
-from huggingface_hub import InferenceClient
 
-# Load environment variables from .env (no-op if none)
+# Load HF_TOKEN from .env locally or from environment (CI/CD, AKS)
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
-
-# Initialize the Hugging Face Inference API client
-client = InferenceClient(token=HF_TOKEN)
+INFERENCE_API_URL = "https://api-inference.huggingface.co/models/gpt2-medium"
 
 def generate_hf_nudge(
     user_id,
@@ -23,7 +21,8 @@ def generate_hf_nudge(
     variant
 ):
     """
-    Generate a personalized engagement nudge using the Hugging Face Inference API.
+    Generate a personalized engagement nudge by calling
+    the Hugging Face Inference API over HTTP.
     """
     prompt = (
         f"User {user_id} profile:\n"
@@ -35,18 +34,28 @@ def generate_hf_nudge(
         f"- Monthly charges: ${monthly_charges}\n"
         f"- Paperless billing: {paperless_billing}\n"
         f"- Variant: {variant}\n\n"
-        "Write a concise, friendly suggestion to help this user increase engagement and reduce churn."
+        "Write a concise, friendly suggestion to help this user "
+        "increase engagement and reduce churn."
     )
 
-    # Call HF Inference API with top-level generation parameters
-    result = client.text_generation(
-        model="gpt2-medium",
-        prompt=prompt,
-        max_new_tokens=100,
-        temperature=0.7
-    )
+    headers = {
+        "Authorization": f"Bearer {HF_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "inputs": prompt,
+        "parameters": {
+            "max_new_tokens": 100,
+            "temperature": 0.7
+        }
+    }
 
-    # Extract generated text
-    if hasattr(result, "generated_text"):
-        return result.generated_text.strip()
-    return result[0].get("generated_text", "").strip()
+    response = requests.post(INFERENCE_API_URL, headers=headers, json=payload, timeout=30)
+    response.raise_for_status()
+    data = response.json()
+
+    # The API returns a list of dicts with "generated_text"
+    if isinstance(data, list) and "generated_text" in data[0]:
+        return data[0]["generated_text"].strip()
+    # Otherwise return the whole payload
+    return str(data).strip()
