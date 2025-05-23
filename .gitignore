@@ -35,3 +35,6 @@ logs/
 
 # Ignore runtime logs
 logs/usage.log
+
+# Hugging Face API token
+.env
