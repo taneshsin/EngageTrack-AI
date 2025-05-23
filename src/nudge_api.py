@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # Load HF_TOKEN from .env locally or from environment (CI/CD, AKS)
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
-INFERENCE_API_URL = "https://api-inference.huggingface.co/models/gpt2-medium"
+INFERENCE_API_URL = "https://api-inference.huggingface.co/models/gpt2"
 
 def generate_hf_nudge(
     user_id,
