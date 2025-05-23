@@ -33,3 +33,10 @@ jobs:
         streamlit run src/main.py --server.headless true &
         sleep 10
         pkill streamlit
+
+    - name: 🔍 Smoke test: HF nudge
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        python test_nudge.py
+
