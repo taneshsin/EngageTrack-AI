@@ -1,6 +1,6 @@
 # 🆘 Help Center – EngageTrack AI
 
-Welcome to **EngageTrack AI** – a simulated SaaS analytics platform for demonstrating AI-powered insights, churn risk prediction, per-user explainability, and feature nudging.
+Welcome to **EngageTrack AI** – a simulated SaaS analytics platform for demonstrating AI-powered insights, churn risk prediction, per-user explainability, and real LLM nudges.
 
 ---
 
@@ -12,64 +12,64 @@ Use the **dropdown menu** to choose a simulated user. Their full profile — inc
 
 ## 💡 2. Generate AI-Driven Recommendations
 
-- Click 🔁 **Generate New Nudge** to simulate a fresh engagement tip  
-- Nudges are based on behavioral indicators such as low usage, frequent support calls, billing delays, and contract type  
-- You can see tailored suggestions that help reduce churn and improve retention  
+- Click **Generate New Nudge** to request a fresh engagement tip  
+- Nudges are powered by Together AI’s Mixtral-8x7B model and personalized on tenure, support calls, billing delays, contract, and variant  
+- If generation fails, you’ll see an error message explaining the issue  
 
 ---
 
 ## 📥 3. Download User Summary
 
-Click the **Download Summary** button to export user insights (plan type, A/B variant, churn risk, and AI nudge) as a TXT file — useful for mock reporting or reviews.
+Click the **Download Summary** button to export user insights (plan details, A/B variant, churn probability, risk level, and AI nudge) as a **TXT** file — handy for mock reporting or reviews.
 
 ---
 
 ## 🧩 4. Per-User Explainability
 
-Under **User Insights**, open the **“Why this prediction? (Per-user SHAP)”** expander to see a waterfall plot that shows the top 10 features driving the churn prediction for the selected user. Each bar is labeled with its feature name and impact.
+Under **User Insights**, expand **“Why this prediction? (Per-user SHAP)”** to view a waterfall plot showing the top 10 features driving churn risk for the selected user. Each bar is labeled with its feature name and impact.
 
 ---
 
 ## 📊 5. Explore the System Dashboard
 
-Navigate to the **Analytics Dashboard** tab to view:
+In the **Analytics Dashboard** tab, you’ll find:
 
 - 🔥 Usage Frequency Distribution  
-- 📞 Support Call Frequency  
+- 📞 Support Call Volume  
 - ⏳ Payment Delay Distribution  
 - 📅 Contract Type Breakdown  
-- 🧪 A/B Variant Distribution  
+- 🧪 A/B Variant Split  
 - ❌ Churn Rate by Variant  
 
-These charts reflect aggregated metrics across the simulated user base.
+These charts aggregate metrics across all users.
 
 ---
 
-## 🧠 6. Understand Churn Prediction
+## 🧠 6. Understand Global Explainability
 
 On the **Explainability** tab:
 
-- View SHAP summary plots explaining how each feature impacts churn risk globally  
-- Compare global feature impact against individual user explanations  
+- See a SHAP summary plot showing global feature importance  
+- Compare global impacts with individual user explanations  
 
 ---
 
 ## 👩‍💻 For Developers
 
-| Task                     | File/Module                        |
-|--------------------------|------------------------------------|
-| Modify user data         | `data/churn.csv`                   |
-| Tweak nudge responses    | `mock_api.py`                      |
-| Update ML preprocessing  | `data_loader.py`                   |
-| Update ML model behavior | `app.py`                           |
-| Extend analytics         | `app.py` (tab logic & visualizations) |
+| Task                         | File/Module              |
+|------------------------------|--------------------------|
+| Modify dataset               | `data/churn.csv`         |
+| Generate nudges              | `src/nudge_api.py`       |
+| Preprocess data              | `src/data_loader.py`     |
+| Train/update churn model     | `src/app.py` (cache fn)  |
+| Update visualizations/UI     | `src/app.py` (tab logic) |
 
-All source code lives in your project root. Streamlit runs the app from `app.py`, and the data loader logic is in `data_loader.py`.
+Streamlit entrypoint: `src/app.py`. All LLM calls live in `src/nudge_api.py`.
 
 ---
 
 ## 📬 Support & Contributions
 
-This project is for demo and portfolio use only. For improvements or bug reports, feel free to fork the repo or open an issue.
+This project is for demonstration and portfolio purposes. To suggest improvements or report issues, please fork the repo or open an issue.
 
-Thanks for exploring **EngageTrack AI**!  
+Thank you for using **EngageTrack AI**!  
