@@ -37,7 +37,7 @@ def generate_hf_nudge(
         f"- Monthly charges: ${monthly_charges}\n"
         f"- Paperless billing: {paperless_billing}\n"
         f"- Variant: {variant}\n\n"
-        "Write a brief, friendly message (1-2 sentences) to help this user engage more and avoid churn."
+        "Write a brief, friendly message in 40 words to help this user engage more and avoid churn."
     )
 
     headers = {
