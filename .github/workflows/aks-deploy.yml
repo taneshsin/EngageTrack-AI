@@ -43,6 +43,12 @@ jobs:
         resource-group: ${{ secrets.RESOURCE_GROUP }}
         cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
+    - name: 🔐 Create hf-token Secret in AKS
+      run: |
+        kubectl create secret generic hf-token \
+          --from-literal=HF_TOKEN="${{ secrets.HF_TOKEN }}" \
+          --dry-run=client -o yaml | kubectl apply -f -
+
     - name: 🚀 Deploy to AKS
       run: |
         kubectl apply -f engagetrack-deploy.yaml
