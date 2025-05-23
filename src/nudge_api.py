@@ -9,7 +9,7 @@ load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 # Together AI completion endpoint
-TG_URL = "https://api.together.xyz/v1/completions"
+TG_URL = "https://api.together.ai/api/v1/completions"
 
 def generate_hf_nudge(
     user_id,
