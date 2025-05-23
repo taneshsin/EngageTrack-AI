@@ -4,12 +4,13 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# Load your Together AI key (still in HF_TOKEN for compatibility)
+# Load your Together AI key (still via HF_TOKEN env var)
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# Use the Together AI completions endpoint you’ve verified
+# Together AI free Llama Vision + FLUX.1 completion endpoint
 TG_URL = "https://api.together.xyz/v1/completions"
+MODEL_NAME = "together-llama-11b-flux.1"  # the free-tier model
 
 def generate_hf_nudge(
     user_id,
@@ -23,8 +24,7 @@ def generate_hf_nudge(
     variant
 ):
     """
-    Generate a personalized engagement nudge via Together AI's 
-    completions endpoint (api.together.xyz/v1/completions).
+    Generate a personalized engagement nudge via Together AI’s free Llama Vision 11B + FLUX.1 model.
     """
     prompt = (
         f"User {user_id} profile:\n"
@@ -44,7 +44,7 @@ def generate_hf_nudge(
         "Content-Type": "application/json"
     }
     payload = {
-        "model": "together-vicuna-7b",
+        "model": MODEL_NAME,
         "prompt": prompt,
         "max_tokens": 100,
         "temperature": 0.7
@@ -52,11 +52,10 @@ def generate_hf_nudge(
 
     resp = requests.post(TG_URL, headers=headers, json=payload, timeout=30)
     if resp.status_code != 200:
-        # Debug: show the body on 404 or other errors
         raise RuntimeError(f"Together API error {resp.status_code}: {resp.text}")
 
     data = resp.json()
-    # Expect: {"choices":[{"text":"..."}], ...}
+    # Expect {"choices":[{"text":"..."}], ...}
     choices = data.get("choices", [])
     if choices and isinstance(choices[0], dict) and "text" in choices[0]:
         return choices[0]["text"].strip()
